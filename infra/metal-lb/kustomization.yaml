@@ -3,5 +3,4 @@ kind: Kustomization
 namespace: infra
 resources:
   - ip-addresses.yaml
-  - l2-advertisement.yaml
   - metal-lb.yaml
