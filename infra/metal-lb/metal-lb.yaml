@@ -3,12 +3,11 @@ kind: HelmRelease
 metadata:
   name: metal-lb
 spec:
-  releaseName: metal-lb
   chart:
     spec:
-      chart: metal-lb
+      chart: metallb
       sourceRef:
         kind: HelmRepository
-        name: metal-lb
+        name: metal-lb-repo
         namespace: flux-system
   interval: 5m

@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
-  name: metal-lb
+  name: metal-lb-repo
 spec:
-  interval: 5m
+  interval: 1h
   url: https://metallb.github.io/metallb
