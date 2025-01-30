@@ -1,0 +1,14 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: metal-lb
+spec:
+  releaseName: metal-lb
+  chart:
+    spec:
+      chart: metal-lb
+      sourceRef:
+        kind: HelmRepository
+        name: metal-lb
+        namespace: flux-system
+  interval: 5m
