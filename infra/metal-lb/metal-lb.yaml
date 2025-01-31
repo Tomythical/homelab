@@ -13,9 +13,9 @@ spec:
   interval: 5m
   values:
     speaker:
-    securityContext:
-      capabilities:
-        drop:
-          - ALL
-      privileged: true  # Allow privileged mode to bypass restrictions
-      allowPrivilegeEscalation: true
+      securityContext:
+        capabilities:
+          drop:
+            - ALL
+        privileged: true  # Allow privileged mode to bypass restrictions
+        allowPrivilegeEscalation: true
