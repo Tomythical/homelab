@@ -11,3 +11,11 @@ spec:
         name: metal-lb-repo
         namespace: flux-system
   interval: 5m
+  values:
+    speaker:
+    securityContext:
+      capabilities:
+        drop:
+          - ALL
+      privileged: true  # Allow privileged mode to bypass restrictions
+      allowPrivilegeEscalation: true
