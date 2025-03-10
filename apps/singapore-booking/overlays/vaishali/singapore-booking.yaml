@@ -6,7 +6,7 @@ metadata:
 spec:
   jobTemplate:
     spec:
-      timeZone: 'Asia/Singapore' #You can change this line with any timezone
+      timeZone: 'Asia/Singapore' 
       schedule: "59 06 * * 2"
       template:
         spec:
