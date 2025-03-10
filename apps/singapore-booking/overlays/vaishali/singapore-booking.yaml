@@ -4,10 +4,10 @@ kind: CronJob
 metadata:
   name: singapore-booking
 spec:
+  timeZone: 'Asia/Singapore'
+  schedule: "59 06 * * 2"
   jobTemplate:
     spec:
-      timeZone: 'Asia/Singapore' 
-      schedule: "59 06 * * 2"
       template:
         spec:
           containers:
