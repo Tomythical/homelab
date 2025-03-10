@@ -1,0 +1,26 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: singapore-booking
+spec:
+  jobTemplate:
+    spec:
+      timeZone: 'Asia/Singapore' #You can change this line with any timezone
+      schedule: "59 06 * * 2"
+      template:
+        spec:
+          containers:
+            - name: singapore-booking
+              args: [-start=8]
+          env:
+            - name: USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: singapore-booking-login
+                  key: USERNAME
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: singapore-booking-login
+                  key: PASSWORD
