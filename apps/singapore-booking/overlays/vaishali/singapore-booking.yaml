@@ -5,7 +5,7 @@ metadata:
   name: singapore-booking
 spec:
   timeZone: 'Asia/Singapore'
-  schedule: "59 06 * * 2"
+  schedule: "2 07 * * 3"
   jobTemplate:
     spec:
       template:
