@@ -1,0 +1,33 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: singapore-booking-test
+  namespace: automation
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+        - name: singapore-booking
+          image: ghcr.io/tomythical/selenium-automation:main
+          args: [-start=19, -dry, -book]
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+          - name: USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: singapore-booking-login
+                key: USERNAME
+          - name: PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: singapore-booking-login
+                key: PASSWORD
+      restartPolicy: Never

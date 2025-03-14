@@ -1,0 +1,15 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: singapore-booking
+spec:
+  schedule: "59 06 * * 2"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: singapore-booking
+              args: [-start=8]
+

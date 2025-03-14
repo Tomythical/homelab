@@ -5,14 +5,10 @@ metadata:
   name: singapore-booking
 spec:
   timeZone: 'Asia/Singapore'
-  schedule: "14 07 * * 4"
   jobTemplate:
     spec:
       template:
         spec:
-          containers:
-            - name: singapore-booking
-              args: [-start=8]
           env:
             - name: USERNAME
               valueFrom:
