@@ -11,7 +11,7 @@ spec:
       containers:
         - name: singapore-booking
           image: ghcr.io/tomythical/selenium-automation:main
-          args: [-start=19, -dry, -book]
+          args: [-start=19]
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false

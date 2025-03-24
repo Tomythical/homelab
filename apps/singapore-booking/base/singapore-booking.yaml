@@ -9,8 +9,10 @@ spec:
       labels:
         app: singapore-booking
     spec:
+      backoffLimit: 0
       template:
         spec:
+          restartPolicy: Never
           containers:
             - name: singapore-booking
               image: ghcr.io/tomythical/selenium-automation:main
@@ -21,4 +23,3 @@ spec:
                   drop: ["ALL"]
                 seccompProfile:
                   type: RuntimeDefault
-          restartPolicy: Never
