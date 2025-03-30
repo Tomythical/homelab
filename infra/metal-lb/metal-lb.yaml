@@ -11,11 +11,16 @@ spec:
         name: metal-lb-repo
         namespace: flux-system
   interval: 5m
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
   values:
     speaker:
       securityContext:
         capabilities:
           drop:
             - ALL
-        privileged: true  # Allow privileged mode to bypass restrictions
+        privileged: true
         allowPrivilegeEscalation: true
+      ignoreExcludeLB: true
