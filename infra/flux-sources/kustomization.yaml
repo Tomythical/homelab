@@ -5,3 +5,4 @@ resources:
   - metal-lb.yaml
   - sealed-secrets.yaml
   - local-path-provisioner.yaml
+  - k8s-mediaserver.yaml
