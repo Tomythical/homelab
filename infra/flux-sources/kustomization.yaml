@@ -4,3 +4,4 @@ namespace: flux-system
 resources:
   - metal-lb.yaml
   - sealed-secrets.yaml
+  - local-path-provisioner.yaml
