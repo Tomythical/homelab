@@ -1,8 +1,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: GitRepository
 metadata:
-  name: k8s-mediaserver
+  name: k8s-mediaserver-operator
   namespace: flux-system
 spec:
   interval: 1h
-  url: https://github.com/kubealex/k8s-mediaserver-helm
+  url: https://github.com/kubealex/k8s-mediaserver-operator
+  ref:
+    branch: master
