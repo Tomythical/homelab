@@ -23,9 +23,6 @@ spec:
         size: 5Gi
         pvcStorageClass: local-path
         accessMode: ReadWriteOnce
-      ingress:
-        ingressClassName: tailscale
-
 
     plex:
       enabled: false
@@ -45,12 +42,11 @@ spec:
         extraLBAnnotations: {}
         # Defines an additional LB service, requires cloud provider service or MetalLB
       ingress:
-        enabled: true
-        annotations:
-          tailscale.com/funnel: "true"
+        enabled: false
+        annotations: {}
         path: /sonarr
         tls:
-          enabled: true
+          enabled: false
           secretName: ""
       resources: {}
       volume:
