@@ -11,3 +11,7 @@ spec:
         kind: GitRepository
         name: local-path-provisioner
         namespace: flux-system
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
