@@ -5,6 +5,10 @@ metadata:
   namespace: tailscale
 spec:
   interval: 1h
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
   chart:
     spec:
       chart: tailscale-operator
