@@ -3,6 +3,10 @@ kind: HelmRelease
 metadata:
   name: k8s-mediaserver
 spec:
+  install:
+    timeout: 5m0s
+  upgrade:
+    timeout: 5m0s
   interval: 1h
   chart:
     spec:
