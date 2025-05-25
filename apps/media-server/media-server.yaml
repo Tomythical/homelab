@@ -11,7 +11,6 @@ spec:
         kind: GitRepository
         name: k8s-mediaserver-operator
         namespace: flux-system
-      version: "*"
   values:
     general:
       ingress_host: media.local
