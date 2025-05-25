@@ -22,13 +22,13 @@ spec:
                 name: radarr
                 port:
                   number: 7878
-          - path: /jellyfin
+          - path: /sabnzbd
             pathType: Prefix
             backend:
               service:
-                name: jellyfin
+                name: sabnzbd
                 port:
-                  number: 8096
+                  number: 8080
           - path: /prowlarr
             pathType: Prefix
             backend:
