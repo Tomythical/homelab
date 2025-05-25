@@ -7,3 +7,4 @@ resources:
   - ../../infra/sealed-secrets/
   - ../../infra/traefik/
   - ../../infra/tailscale/
+  - ../../infra/local-path-provisioner/
