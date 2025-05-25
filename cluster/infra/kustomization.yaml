@@ -6,3 +6,4 @@ resources:
   - ../../infra/namespaces/
   - ../../infra/sealed-secrets/
   - ../../infra/traefik/
+  - ../../infra/tailscale/
