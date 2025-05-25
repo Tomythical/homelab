@@ -3,4 +3,3 @@ kind: Kustomization
 namespace: traefik
 resources:
   - traefik.yaml
-  - ingress-class.yaml
