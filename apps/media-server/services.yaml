@@ -4,6 +4,7 @@ metadata:
   name: sonarr
   annotations:
     tailscale.com/expose: "true"
+    tailscale.com/hostname: sonarr
 spec:
   selector:
     app: sonarr
