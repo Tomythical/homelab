@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: media-server
 resources:
   - media-server.yaml
-  - services.yaml
+  - ingress.yaml
