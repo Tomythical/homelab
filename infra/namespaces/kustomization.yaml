@@ -5,3 +5,4 @@ resources:
   - automation.yaml
   - metal-lb.yaml
   - media-server.yaml
+  - traefik.yaml

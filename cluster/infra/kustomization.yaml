@@ -5,3 +5,4 @@ resources:
   - ../../infra/metal-lb/
   - ../../infra/namespaces/
   - ../../infra/sealed-secrets/
+  - ../../infra/traefik/
