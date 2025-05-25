@@ -4,4 +4,3 @@ namespace: tailscale
 resources:
   - tailscale.yaml
   - subnet-router.yaml
-  - kube-apiserver-proxy.yaml
