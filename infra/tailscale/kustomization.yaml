@@ -3,4 +3,3 @@ kind: Kustomization
 namespace: tailscale
 resources:
   - tailscale.yaml
-  - subnet-router.yaml
