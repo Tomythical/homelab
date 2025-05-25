@@ -1,16 +1,14 @@
-apiVersion: v1
-kind: Service
+apiVersion: networking.k8s.io/v1
+kind: Ingress
 metadata:
-  name: sonarr
-  annotations:
-    tailscale.com/expose: "true"
-    tailscale.com/hostname: sonarr
+  name: sonarr-ingress
 spec:
-  selector:
-    app: sonarr
-  ports:
-    - port: 8989
-      name: sonarr-port
-  type: LoadBalancer
-  loadBalancerClass: tailscale
-
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: sonarr
+      port:
+        number: 8989
+  tls:
+    - hosts:
+        - sonarr # The hostname you want to access the service by
