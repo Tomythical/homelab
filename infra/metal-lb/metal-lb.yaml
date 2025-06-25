@@ -7,6 +7,7 @@ spec:
     spec:
       chart: metallb
       sourceRef:
+        version: 0.15.2
         kind: HelmRepository
         name: metal-lb-repo
         namespace: flux-system
