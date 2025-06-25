@@ -3,19 +3,15 @@ kind: HelmRelease
 metadata:
   name: metal-lb
 spec:
+  interval: 5m
   chart:
     spec:
       chart: metallb
+      version: "0.15.2"
       sourceRef:
-        version: 0.15.2
         kind: HelmRepository
         name: metal-lb-repo
         namespace: flux-system
-  interval: 5m
-  install:
-    crds: CreateReplace
-  upgrade:
-    crds: CreateReplace
   values:
     speaker:
       securityContext:
