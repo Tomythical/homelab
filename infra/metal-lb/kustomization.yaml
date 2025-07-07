@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: metallb-system
 resources:
   - metal-lb.yaml
-  # - ip-addresses.yaml
+  - ip-addresses.yaml

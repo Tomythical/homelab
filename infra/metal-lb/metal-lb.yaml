@@ -12,10 +12,6 @@ spec:
         kind: HelmRepository
         name: metal-lb-repo
         namespace: flux-system
-  install:
-    crds: Create
-  upgrade:
-    crds: Create
   values:
     speaker:
       securityContext:
