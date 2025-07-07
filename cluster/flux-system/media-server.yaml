@@ -7,7 +7,11 @@ metadata:
 spec:
   dependsOn:
   - name: infra
+    namespace: flux-system
   interval: 10m0s
+  wait: true
+  timeout: 5m
+  retryInterval: 2m
   path: ./cluster/media-server
   prune: true
   sourceRef:

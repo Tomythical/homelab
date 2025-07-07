@@ -4,3 +4,7 @@ resources:
 - gotk-components.yaml
 - gotk-sync.yaml
 - crds.yaml
+- namespaces.yaml
+- apps.yaml
+- infra.yaml
+- media-server.yaml
