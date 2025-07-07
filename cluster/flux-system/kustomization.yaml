@@ -7,4 +7,3 @@ resources:
 - namespaces.yaml
 - apps.yaml
 - infra.yaml
-- media-server.yaml
