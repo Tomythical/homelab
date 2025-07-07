@@ -5,11 +5,15 @@ metadata:
   name: namespaces
   namespace: flux-system
 spec:
-  dependsOn:
-  - name: crds
   interval: 10m0s
+  wait: true
+  timeout: 5m
+  retryInterval: 2m
   path: ./cluster/namespaces
   prune: false
   sourceRef:
     kind: GitRepository
     name: flux-system
+  dependsOn:
+  - name: crds
+    namespace: flux-system
