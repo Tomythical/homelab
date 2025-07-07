@@ -3,7 +3,6 @@ kind: Kustomization
 resources:
   - ../../infra/flux-sources/
   - ../../infra/metal-lb/
-  - ../../infra/namespaces/
   - ../../infra/sealed-secrets/
   - ../../infra/tailscale/
   - ../../infra/local-path-provisioner/
