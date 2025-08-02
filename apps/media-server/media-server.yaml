@@ -25,7 +25,7 @@ spec:
         pvcName: mediaserver-pvc
         size: 500Gi
         pvcStorageClass: local-path
-        accessMode: ReadWriteMany
+        accessMode: ReadWriteOnce
 
     plex:
       enabled: false
