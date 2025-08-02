@@ -22,7 +22,7 @@ spec:
       jellyfin_ingress_host: jellyfin.local
       storage:
         customVolume: false
-        pvcName: mediaserver-pvc
+        pvcName: mediaserver-rwo-pvc
         size: 500Gi
         pvcStorageClass: local-path
         accessMode: ReadWriteOnce
