@@ -7,3 +7,4 @@ resources:
 - namespaces.yaml
 - apps.yaml
 - infra.yaml
+- external-secrets.yaml
