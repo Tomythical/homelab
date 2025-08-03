@@ -6,3 +6,4 @@ resources:
   - ../../infra/sealed-secrets/
   # - ../../infra/tailscale/
   - ../../infra/local-path-provisioner/
+  - ../../infra/external-secrets/

@@ -7,3 +7,4 @@ resources:
   - local-path-provisioner.yaml
   - k8s-mediaserver.yaml
   - tailscale.yaml
+  - external-secrets.yaml
