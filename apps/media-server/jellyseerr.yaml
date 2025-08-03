@@ -9,16 +9,23 @@ spec:
     name: jellyseerr
     namespace: flux-system
   values:
+    fullnameOverride: jellyseerr
+    config:
+      persistence:
+        size: 1Gi
+        accessModes:
+          - ReadWriteOnce
+        storageClass: local-path
     service:
       type: ClusterIP
   postRenderers:
     - kustomize:
-        patchesJson6902:
+        patches:
           - target:
               version: v1
               kind: Service
               name: jellyseerr
-            patch:
+            patch: |
               - op: add
                 path: /metadata/annotations/tailscale.com~1expose
                 value: "true"
