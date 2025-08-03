@@ -151,3 +151,24 @@ spec:
        storageClassName: local-path
        accessModes: ReadWriteOnce
        storage: 1Gi
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: Service
+              name: radarr
+            patch: |
+              - op: add
+                path: /metadata/annotations/tailscale.com~1expose
+                value: "true"
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: Service
+              name: sonarr
+            patch: |
+              - op: add
+                path: /metadata/annotations/tailscale.com~1expose
+                value: "true"
