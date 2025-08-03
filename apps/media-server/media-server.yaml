@@ -182,3 +182,13 @@ spec:
               - op: add
                 path: /metadata/annotations/tailscale.com~1expose
                 value: "true"
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: Service
+              name: prowlarr
+            patch: |
+              - op: add
+                path: /metadata/annotations/tailscale.com~1expose
+                value: "true"
