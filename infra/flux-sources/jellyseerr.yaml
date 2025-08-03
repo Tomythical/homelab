@@ -1,4 +1,4 @@
-apiVersion: source.toolkit.fluxcd.io/v1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
   name: jellyseerr
@@ -7,4 +7,4 @@ spec:
   url: oci://ghcr.io/fallenbagel/jellyseerr/jellyseerr-chart
   timeout: 3m
   ref:
-    tag: latest
+    semver: ">=2.x"
