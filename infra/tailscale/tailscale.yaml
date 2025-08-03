@@ -12,3 +12,8 @@ spec:
         kind: HelmRepository
         name: tailscale-repo
         namespace: flux-system
+  values:
+    installCRDs: false
+    operatorConfig:
+      defaultTags:
+        - "tag:k8s-operator"

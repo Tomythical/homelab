@@ -4,6 +4,6 @@ resources:
   - ../../infra/flux-sources/
   - ../../infra/metal-lb/
   - ../../infra/sealed-secrets/
-  # - ../../infra/tailscale/
+  - ../../infra/tailscale/
   - ../../infra/local-path-provisioner/
   - ../../infra/external-secrets/
