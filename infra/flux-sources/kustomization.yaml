@@ -8,3 +8,4 @@ resources:
   - k8s-mediaserver.yaml
   - tailscale.yaml
   - external-secrets.yaml
+  - jellyseer.yaml

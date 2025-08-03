@@ -4,3 +4,4 @@ namespace: media-server
 resources:
   - media-server.yaml
   - ingress.yaml
+  - jellyseerr.yaml

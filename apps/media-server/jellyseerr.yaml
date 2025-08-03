@@ -1,0 +1,24 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyseerr
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: jellyseerr
+    namespace: flux-system
+  values:
+    service:
+      type: ClusterIP
+  postRenderers:
+    - kustomize:
+        patchesJson6902:
+          - target:
+              version: v1
+              kind: Service
+              name: jellyseerr
+            patch:
+              - op: add
+                path: /metadata/annotations/tailscale.com~1expose
+                value: "true"
