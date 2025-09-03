@@ -17,3 +17,5 @@ spec:
     operatorConfig:
       defaultTags:
         - "tag:k8s-operator"
+    apiServerProxyConfig:
+      mode: "true"
