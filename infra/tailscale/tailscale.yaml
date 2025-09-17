@@ -17,6 +17,10 @@ spec:
     operatorConfig:
       defaultTags:
         - "tag:k8s-operator"
+      image:
+        repository: tailscale/k8s-operator
+        tag: "stable"
+      logging: "debug" # info, debug, dev
     apiServerProxyConfig:
       allowImpersonation: "true"
       mode: "true"
