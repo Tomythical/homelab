@@ -18,4 +18,5 @@ spec:
       defaultTags:
         - "tag:k8s-operator"
     apiServerProxyConfig:
+      allowImpersonation: "true"
       mode: "true"
