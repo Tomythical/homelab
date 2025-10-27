@@ -9,3 +9,4 @@ resources:
   - tailscale.yaml
   - external-secrets.yaml
   - jellyseerr.yaml
+  - prometheus-community.yaml

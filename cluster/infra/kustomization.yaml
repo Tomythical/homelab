@@ -7,3 +7,4 @@ resources:
   - ../../infra/tailscale/
   - ../../infra/local-path-provisioner/
   - ../../infra/external-secrets/
+  - ../../infra/kube-prometheus/

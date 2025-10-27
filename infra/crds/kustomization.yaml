@@ -4,3 +4,4 @@ resources:
   - metal-lb/
   - external-secrets/
   - tailscale/
+  - prometheus-community/
