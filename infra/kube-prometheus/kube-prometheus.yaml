@@ -13,12 +13,12 @@ spec:
         kind: HelmRepository
         name: prometheus-community
         namespace: flux-system
-values:
-  grafana:
-    service:
-      annotations:
-        "tailscale.com/expose": "true"
-  alertmanager:
-    service:
-      annotations:
-        "tailscale.com/expose": "true"
+  values:
+    grafana:
+      service:
+        annotations:
+          "tailscale.com/expose": "true"
+    alertmanager:
+      service:
+        annotations:
+          "tailscale.com/expose": "true"
