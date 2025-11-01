@@ -8,3 +8,4 @@ resources:
   - tailscale.yaml
   - external-secrets.yaml
   - monitoring.yaml
+  - n8n.yaml
