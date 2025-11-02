@@ -20,8 +20,8 @@ spec:
         size: 8Gi
 
     service:
-      labels:
-        "tailscale.expose": "true"
+      annotations:
+        tailscale.com/expose: "true"
 
     worker:
       persistence:
