@@ -18,6 +18,8 @@ spec:
         enabled: true
         storageClass: local-path
         size: 8Gi
+      extraEnvVars:
+        N8N_SECURE_COOKIE: false
 
     service:
       annotations:
