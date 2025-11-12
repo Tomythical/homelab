@@ -11,3 +11,4 @@ resources:
   - jellyseerr.yaml
   - prometheus-community.yaml
   - n8n.yaml
+  - kagent.yaml
