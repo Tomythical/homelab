@@ -2,7 +2,6 @@ apiVersion: kagent.dev/v1alpha2
 kind: ModelConfig
 metadata:
   name: openrouter-model
-  namespace: infra
 spec:
   apiKeySecret: openrouterkey
   apiKeySecretKey: apiKey

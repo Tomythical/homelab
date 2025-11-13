@@ -9,3 +9,4 @@ resources:
   - external-secrets.yaml
   - monitoring.yaml
   - n8n.yaml
+  - kagent.yaml

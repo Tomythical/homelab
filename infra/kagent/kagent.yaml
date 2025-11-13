@@ -1,0 +1,48 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kagent
+spec:
+  interval: 3m
+  chart:
+    spec:
+      chart: kagent
+      version: 0.7.4
+      sourceRef:
+        kind: HelmRepository
+        name: kagent-chart
+        namespace: flux-system
+      interval: 5m
+  values:
+    tag: 0.7.4
+    providers:
+      default: openAI
+      openAI:
+        provider: OpenAI
+        model: "gpt-4.1-mini"
+        apiKeySecretRef: openrouterkey
+        apiKeySecretKey: apiKey
+    agents:
+      kgateway-agent:
+        enabled: false
+      istio-agent:
+        enabled: false
+      promql-agent:
+        enabled: true
+      observability-agent:
+        enabled: true
+      argo-rollouts-agent:
+        enabled: false
+      helm-agent:
+        enabled: true
+      cilium-policy-agent:
+        enabled: false
+      cilium-manager-agent:
+        enabled: false
+      cilium-debug-agent:
+        enabled: false
+    tools:
+      grafana-mcp:
+        enabled: true
+      querydoc:
+        enabled: false

@@ -1,21 +1,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: OCIRepository
+kind: HelmRepository
 metadata:
   name: kagent-chart
   namespace: flux-system
 spec:
   interval: 1h
-  url: oci://ghcr.io/kagent-dev/kagent/helm/kagent
-  ref:
-    semver: ">=0.x"
----
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: OCIRepository
-metadata:
-  name: kagent-crds-chart
-  namespace: flux-system
-spec:
-  interval: 1h
-  url: oci://ghcr.io/kagent-dev/kagent/helm/kagent-crds
-  ref:
-    semver: ">=0.x"
+  url: oci://ghcr.io/kagent-dev/kagent/helm/
+  type: oci
+  timeout: 3m
