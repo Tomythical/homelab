@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: kagent
 resources:
   - kagent.yaml
-  - modelconfig.yaml
+  # - modelconfig.yaml

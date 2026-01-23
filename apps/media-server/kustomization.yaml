@@ -2,6 +2,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: media-server
 resources:
-  - media-server.yaml
+  # - media-server.yaml
   - ingress.yaml
+  - pvc.yaml
   - jellyseerr.yaml
+  - jellyfin/
+  - prowlarr/
+  - radarr/
+  - sabnzbd/
+  - sonarr/

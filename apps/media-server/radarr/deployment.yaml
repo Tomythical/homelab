@@ -16,6 +16,9 @@ spec:
       labels:
         app: radarr
     spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
       initContainers:
         - name: config-radarr
           image: docker.io/ubuntu:groovy
@@ -55,6 +58,9 @@ spec:
             - name: mediaserver-volume
               mountPath: /movies
               subPath: media/movies
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
       volumes:
         - name: mediaserver-volume
           persistentVolumeClaim:
