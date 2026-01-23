@@ -1,0 +1,68 @@
+# Source: k8s-mediaserver/templates/sabnzbd-resources.yml
+### DEPLOYMENT
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sabnzbd
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sabnzbd
+  template:
+    metadata:
+      labels:
+        app: sabnzbd
+    spec:
+      initContainers:
+        - name: config-sabnzbd
+          image: docker.io/ubuntu:groovy
+          command: [/init-sabnzbd/init-sabnzbd.sh]
+          volumeMounts:
+            - mountPath: /init-sabnzbd
+              name: init-files-sabnzbd
+            - name: pvc-sabnzbd-config
+              mountPath: /sabnzbd-config
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      containers:
+        - name: k8s-mediaserver
+          envFrom:
+            - configMapRef:
+                name: sabnzbd-config
+          image: docker.io/linuxserver/sabnzbd:latest
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /sabnzbd/wizard/
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 20
+          ports:
+            - name: sabnzbd-http
+              containerPort: 8080
+              protocol: TCP
+            - name: sabnzbd-https
+              containerPort: 9090
+              protocol: TCP
+          volumeMounts:
+            - name: pvc-sabnzbd-config
+              mountPath: /config
+            - name: mediaserver-volume
+              mountPath: /downloads
+              subPath: downloads
+      volumes:
+        - name: mediaserver-volume
+          persistentVolumeClaim:
+            claimName: mediaserver-rwo-pvc
+        - name: pvc-sabnzbd-config
+          persistentVolumeClaim:
+            claimName: pvc-sabnzbd-config
+        - name: init-files-sabnzbd
+          configMap:
+            defaultMode: 493
+            name: init-sabnzbd-cm

@@ -1,0 +1,68 @@
+# Source: k8s-mediaserver/templates/sonarr-resources.yml
+### DEPLOYMENT
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      initContainers:
+        - name: config-sonarr
+          image: docker.io/ubuntu:groovy
+          command: [/init-sonarr/init-sonarr.sh]
+          volumeMounts:
+            - mountPath: /init-sonarr
+              name: init-files-sonarr
+            - name: pvc-sonarr-config
+              mountPath: /sonarr-config
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      containers:
+        - name: k8s-mediaserver
+          envFrom:
+            - configMapRef:
+                name: sonarr-config
+          image: docker.io/linuxserver/sonarr:latest
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /sonarr/ping
+              port: 8989
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 20
+          ports:
+            - name: sonarr-port
+              containerPort: 8989
+              protocol: TCP
+          volumeMounts:
+            - name: pvc-sonarr-config
+              mountPath: /config
+            - name: mediaserver-volume
+              mountPath: /downloads
+              subPath: downloads
+            - name: mediaserver-volume
+              mountPath: /tv
+              subPath: media/tv
+      volumes:
+        - name: mediaserver-volume
+          persistentVolumeClaim:
+            claimName: mediaserver-rwo-pvc
+        - name: pvc-sonarr-config
+          persistentVolumeClaim:
+            claimName: pvc-sonarr-config
+        - name: init-files-sonarr
+          configMap:
+            defaultMode: 493
+            name: init-sonarr-cm

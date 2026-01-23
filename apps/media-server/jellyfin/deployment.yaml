@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      volumes:
+        - name: mediaserver-volume
+          persistentVolumeClaim:
+            claimName: mediaserver-rwo-pvc
+        - name: pvc-jellyfin-config
+          persistentVolumeClaim:
+            claimName: pvc-jellyfin-config
+      containers:
+        - name: k8s-mediaserver
+          envFrom:
+            - configMapRef:
+                name: jellyfin-config
+          image: docker.io/linuxserver/jellyfin:latest
+          imagePullPolicy: Always
+          readinessProbe:
+            tcpSocket:
+              port: 8096
+            initialDelaySeconds: 20
+            periodSeconds: 15
+          ports:
+            - name: jellyfin-port
+              containerPort: 8096
+              protocol: TCP
+          volumeMounts:
+            - name: pvc-jellyfin-config
+              mountPath: /config
+            - name: mediaserver-volume
+              mountPath: /movies
+              subPath: media/movies
+            - name: mediaserver-volume
+              mountPath: /tv
+              subPath: media/tv

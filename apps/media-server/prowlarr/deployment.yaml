@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prowlarr
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      initContainers:
+        - name: config-prowlarr
+          image: docker.io/ubuntu:groovy
+          command: [/init-prowlarr/init-prowlarr.sh]
+          volumeMounts:
+            - mountPath: /init-prowlarr
+              name: init-files-prowlarr
+            - name: pvc-prowlarr-config
+              mountPath: /prowlarr-config
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      containers:
+        - name: k8s-mediaserver
+          envFrom:
+            - configMapRef:
+                name: prowlarr-config
+          image: docker.io/linuxserver/prowlarr:develop
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /prowlarr/ping
+              port: 9696
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 20
+          ports:
+            - name: prowlarr-port
+              containerPort: 9696
+              protocol: TCP
+          volumeMounts:
+            - name: pvc-prowlarr-config
+              mountPath: /config
+      volumes:
+        - name: mediaserver-volume
+          persistentVolumeClaim:
+            claimName: mediaserver-rwo-pvc
+        - name: pvc-prowlarr-config
+          persistentVolumeClaim:
+            claimName: pvc-prowlarr-config
+        - name: init-files-prowlarr
+          configMap:
+            defaultMode: 493
+            name: init-prowlarr-cm

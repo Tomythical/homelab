@@ -1,0 +1,68 @@
+# Source: k8s-mediaserver/templates/radarr-resources.yml
+### DEPLOYMENT
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      initContainers:
+        - name: config-radarr
+          image: docker.io/ubuntu:groovy
+          command: [/init-radarr/init-radarr.sh]
+          volumeMounts:
+            - mountPath: /init-radarr
+              name: init-files-radarr
+            - name: pvc-radarr-config
+              mountPath: /radarr-config
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+      containers:
+        - name: k8s-mediaserver
+          envFrom:
+            - configMapRef:
+                name: radarr-config
+          image: docker.io/linuxserver/radarr:latest
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /radarr/ping
+              port: 7878
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 20
+          ports:
+            - name: radarr-port
+              containerPort: 7878
+              protocol: TCP
+          volumeMounts:
+            - name: pvc-radarr-config
+              mountPath: /config
+            - name: mediaserver-volume
+              mountPath: /downloads
+              subPath: downloads
+            - name: mediaserver-volume
+              mountPath: /movies
+              subPath: media/movies
+      volumes:
+        - name: mediaserver-volume
+          persistentVolumeClaim:
+            claimName: mediaserver-rwo-pvc
+        - name: pvc-radarr-config
+          persistentVolumeClaim:
+            claimName: pvc-radarr-config
+        - name: init-files-radarr
+          configMap:
+            defaultMode: 493
+            name: init-radarr-cm

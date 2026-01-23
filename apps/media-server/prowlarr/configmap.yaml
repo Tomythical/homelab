@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+data:
+  config.xml: |
+    <Config>
+      <UrlBase>/prowlarr</UrlBase>
+    </Config>
+  init-prowlarr.sh: |
+    #!/bin/bash
+    echo "### Initializing config ###"
+    if [ ! -f /prowlarr-config/config.xml ]; then
+      cp -n /init-prowlarr/config.xml /prowlarr-config/config.xml
+      echo "### No configuration found, intialized with default settings ###"
+    fi
+kind: ConfigMap
+metadata:
+  name: init-prowlarr-cm
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prowlarr-config
+data:
+  PGID: '1000'
+  PUID: '1000'
+---
