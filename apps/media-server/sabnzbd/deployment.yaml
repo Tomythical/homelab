@@ -20,18 +20,6 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
       initContainers:
-        - name: fix-downloads-perms
-          image: busybox
-          command:
-          - sh
-          - -c
-          - |
-            mkdir -p /downloads/sabnzbd/incomplete /downloads/sabnzbd/complete
-            chown -R 1000:1000 /downloads
-          volumeMounts:
-            - name: mediaserver-volume
-              mountPath: /downloads
-              subPath: downloads
         - name: config-sabnzbd
           image: docker.io/ubuntu:groovy
           command: [/init-sabnzbd/init-sabnzbd.sh]
