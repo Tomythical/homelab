@@ -10,3 +10,4 @@ resources:
   - radarr/
   - sabnzbd/
   - sonarr/
+  - secret-store.yaml
