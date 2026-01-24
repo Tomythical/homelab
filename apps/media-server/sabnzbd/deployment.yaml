@@ -54,7 +54,6 @@ spec:
               mountPath: /config
             - name: mediaserver-volume
               mountPath: /downloads
-              subPath: downloads
       volumes:
         - name: mediaserver-volume
           persistentVolumeClaim:
