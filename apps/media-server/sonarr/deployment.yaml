@@ -33,8 +33,6 @@ spec:
             - -c
             - |
               set -e
-              mkdir -p /downloads/sabnzbd/complete
-              mkdir -p /downloads/sabnzbd/incomplete
               mkdir -p /data/media/tv /data/media/movies
               chown -R 1000:1000 /data
               chmod -R 775 /data

@@ -4,6 +4,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sabnzbd
+  namespace: media-server
+  labels:
+    app: sabnzbd
 spec:
   strategy:
     type: Recreate
@@ -21,44 +24,40 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       initContainers:
-        - name: fix-downloads-perms
-          image: ubuntu:latest
+        - name: init-media-dirs
+          image: busybox
+          securityContext:
+            runAsUser: 0
           command:
-          - sh
-          - -c
-          - |
-            mkdir -p /downloads/sabnzbd/complete
-            mkdir -p /downloads/sabnzbd/incomplete
-            chown -R 1000:1000 /downloads
-            ls -la /downloads/sabnzbd
+            - sh
+            - -c
+            - |
+              set -e
+              mkdir -p /data/sabnzbd/complete
+              mkdir -p /data/sabnzbd/incomplete
+              chown -R 1000:1000 /data
+              chmod -R 775 /data
           volumeMounts:
             - name: mediaserver-volume
-              mountPath: /downloads
+              mountPath: /data
         - name: config-sabnzbd
           image: docker.io/ubuntu:groovy
           command: [/init-sabnzbd/init-sabnzbd.sh]
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
           volumeMounts:
             - mountPath: /init-sabnzbd
               name: init-files-sabnzbd
             - name: pvc-sabnzbd-config
               mountPath: /sabnzbd-config
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
       containers:
         - name: k8s-mediaserver
+          image: docker.io/linuxserver/sabnzbd:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: sabnzbd-config
-          image: docker.io/linuxserver/sabnzbd:latest
-          imagePullPolicy: Always
-          readinessProbe:
-            httpGet:
-              path: /sabnzbd/wizard/
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 20
           ports:
             - name: sabnzbd-http
               containerPort: 8080
@@ -66,11 +65,18 @@ spec:
             - name: sabnzbd-https
               containerPort: 9090
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /sabnzbd/wizard/
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 20
           volumeMounts:
             - name: pvc-sabnzbd-config
               mountPath: /config
             - name: mediaserver-volume
-              mountPath: /downloads
+              mountPath: /data
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
