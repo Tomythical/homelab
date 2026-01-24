@@ -1,8 +1,8 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jellyfin
+  namespace: media-server
 spec:
   replicas: 1
   selector:
@@ -13,20 +13,32 @@ spec:
       labels:
         app: jellyfin
     spec:
-      volumes:
-        - name: mediaserver-volume
-          persistentVolumeClaim:
-            claimName: mediaserver-rwo-pvc
-        - name: pvc-jellyfin-config
-          persistentVolumeClaim:
-            claimName: pvc-jellyfin-config
+      securityContext:
+        fsGroup: 1000
+      initContainers:
+        - name: fix-jellyfin-perms
+          image: busybox
+          securityContext:
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              # create and fix ownership for mount points
+              mkdir -p /config
+              chown -R 1000:1000 /config
+              chmod -R 775 /config
+          volumeMounts:
+            - name: pvc-jellyfin-config
+              mountPath: /config
       containers:
         - name: k8s-mediaserver
+          image: docker.io/linuxserver/jellyfin:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: jellyfin-config
-          image: docker.io/linuxserver/jellyfin:latest
-          imagePullPolicy: Always
           readinessProbe:
             tcpSocket:
               port: 8096
@@ -40,8 +52,11 @@ spec:
             - name: pvc-jellyfin-config
               mountPath: /config
             - name: mediaserver-volume
-              mountPath: /movies
-              subPath: media/movies
-            - name: mediaserver-volume
-              mountPath: /tv
-              subPath: media/tv
+              mountPath: /data
+      volumes:
+        - name: mediaserver-volume
+          persistentVolumeClaim:
+            claimName: mediaserver-rwo-pvc
+        - name: pvc-jellyfin-config
+          persistentVolumeClaim:
+            claimName: pvc-jellyfin-config
