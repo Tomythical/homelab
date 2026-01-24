@@ -17,21 +17,22 @@ spec:
         app: sonarr
     spec:
       securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
         fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
       initContainers:
         - name: fix-downloads-perms
-          image: busybox
+          image: ubuntu:latest
           command:
           - sh
           - -c
           - |
-            mkdir -p /downloads/sabnzbd/incomplete /downloads/sabnzbd/complete
+            mkdir -p /downloads/sabnzbd/complete
             chown -R 1000:1000 /downloads
+            ls -la /downloads/sabnzbd
           volumeMounts:
             - name: mediaserver-volume
               mountPath: /downloads
-              subPath: downloads
         - name: config-sonarr
           image: docker.io/ubuntu:groovy
           command: [/init-sonarr/init-sonarr.sh]
@@ -66,10 +67,12 @@ spec:
               mountPath: /config
             - name: mediaserver-volume
               mountPath: /downloads
-              subPath: downloads
             - name: mediaserver-volume
               mountPath: /tv
               subPath: media/tv
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
       volumes:
         - name: mediaserver-volume
           persistentVolumeClaim:

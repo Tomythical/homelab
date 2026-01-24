@@ -17,9 +17,22 @@ spec:
         app: radarr
     spec:
       securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
         fsGroup: 1000
-        fsGroupChangePolicy: OnRootMismatch
       initContainers:
+        - name: fix-downloads-perms
+          image: ubuntu:latest
+          command:
+          - sh
+          - -c
+          - |
+            mkdir -p /downloads/sabnzbd/complete
+            chown -R 1000:1000 /downloads
+            ls -la /downloads/sabnzbd
+          volumeMounts:
+            - name: mediaserver-volume
+              mountPath: /downloads
         - name: config-radarr
           image: docker.io/ubuntu:groovy
           command: [/init-radarr/init-radarr.sh]
@@ -54,7 +67,6 @@ spec:
               mountPath: /config
             - name: mediaserver-volume
               mountPath: /downloads
-              subPath: downloads
             - name: mediaserver-volume
               mountPath: /movies
               subPath: media/movies
