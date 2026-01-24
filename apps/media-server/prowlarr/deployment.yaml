@@ -12,6 +12,10 @@ spec:
       labels:
         app: prowlarr
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       initContainers:
         - name: config-prowlarr
           image: docker.io/ubuntu:groovy
@@ -45,6 +49,9 @@ spec:
           volumeMounts:
             - name: pvc-prowlarr-config
               mountPath: /config
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
       volumes:
         - name: mediaserver-volume
           persistentVolumeClaim:

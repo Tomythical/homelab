@@ -1,13 +1,14 @@
-# Source: k8s-mediaserver/templates/radarr-resources.yml
-### DEPLOYMENT
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: radarr
+  namespace: media-server
+  labels:
+    app: radarr
 spec:
+  replicas: 1
   strategy:
     type: Recreate
-  replicas: 1
   selector:
     matchLabels:
       app: radarr
@@ -21,18 +22,21 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       initContainers:
-        - name: fix-downloads-perms
-          image: ubuntu:latest
+        - name: init-media-dirs
+          image: busybox
+          securityContext:
+            runAsUser: 0
           command:
-          - sh
-          - -c
-          - |
-            mkdir -p /downloads/sabnzbd/complete
-            chown -R 1000:1000 /downloads
-            ls -la /downloads/sabnzbd
+            - sh
+            - -c
+            - |
+              set -e
+              mkdir -p /data/media/movies
+              chown -R 1000:1000 /data
+              chmod -R 775 /data
           volumeMounts:
             - name: mediaserver-volume
-              mountPath: /downloads
+              mountPath: /data
         - name: config-radarr
           image: docker.io/ubuntu:groovy
           command: [/init-radarr/init-radarr.sh]
@@ -66,10 +70,7 @@ spec:
             - name: pvc-radarr-config
               mountPath: /config
             - name: mediaserver-volume
-              mountPath: /downloads
-            - name: mediaserver-volume
-              mountPath: /movies
-              subPath: media/movies
+              mountPath: /data
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
