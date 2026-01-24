@@ -380,7 +380,7 @@ roleRef:
   name: external-secrets-cert-controller
 subjects:
   - name: external-secrets-cert-controller
-    namespace: default
+    namespace: external-secrets
     kind: ServiceAccount
 ---
 # Source: external-secrets/templates/rbac.yaml
@@ -400,7 +400,7 @@ roleRef:
   name: external-secrets-controller
 subjects:
   - name: external-secrets
-    namespace: default
+    namespace: external-secrets
     kind: ServiceAccount
 ---
 # Source: external-secrets/templates/rbac.yaml
@@ -408,7 +408,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: external-secrets-leaderelection
-  namespace: default
+  namespace: external-secrets
   labels:
     helm.sh/chart: external-secrets-v1.3.1
     app.kubernetes.io/name: external-secrets
@@ -447,7 +447,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: external-secrets-leaderelection
-  namespace: default
+  namespace: external-secrets
   labels:
     helm.sh/chart: external-secrets-v1.3.1
     app.kubernetes.io/name: external-secrets
@@ -461,7 +461,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: external-secrets
-    namespace: default
+    namespace: external-secrets
 ---
 # Source: external-secrets/templates/validatingwebhook.yaml
 apiVersion: admissionregistration.k8s.io/v1
@@ -486,7 +486,7 @@ webhooks:
     scope:       "Namespaced"
   clientConfig:
     service:
-      namespace: default
+      namespace: external-secrets
       name: external-secrets-webhook
       path: /validate-external-secrets-io-v1-secretstore
   admissionReviewVersions: ["v1", "v1beta1"]
@@ -502,7 +502,7 @@ webhooks:
     scope:       "Cluster"
   clientConfig:
     service:
-      namespace: default
+      namespace: external-secrets
       name: external-secrets-webhook
       path: /validate-external-secrets-io-v1-clustersecretstore
   admissionReviewVersions: ["v1", "v1beta1"]
@@ -532,7 +532,7 @@ webhooks:
     scope:       "Namespaced"
   clientConfig:
     service:
-      namespace: default
+      namespace: external-secrets
       name: external-secrets-webhook
       path: /validate-external-secrets-io-v1-externalsecret
   admissionReviewVersions: ["v1", "v1beta1"]
