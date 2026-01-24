@@ -20,13 +20,13 @@ spec:
               env:
                 - name: RECYCLARR_APP_DATA
                   value: "/config"
+              envFrom:
+                - secretRef:
+                    name: recyclarr-api-keys
               volumeMounts:
                 - name: recyclarr-config
                   mountPath: /config/recyclarr.yml
                   subPath: recyclarr.yml
-                - name: recyclarr-api-keys
-                  mountPath: /config/secrets.yml
-                  subPath: secrets.yml
           volumes:
             - name: recyclarr-config
               configMap:
@@ -34,6 +34,3 @@ spec:
             - name: recyclarr-api-keys
               secret:
                 secretName: recyclarr-api-keys
-                items:
-                  - key: secrets.yml
-                    path: secrets.yml
