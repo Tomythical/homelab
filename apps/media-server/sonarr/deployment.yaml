@@ -1,13 +1,14 @@
-# Source: k8s-mediaserver/templates/sonarr-resources.yml
-### DEPLOYMENT
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sonarr
+  namespace: media-server
+  labels:
+    app: sonarr
 spec:
+  replicas: 1
   strategy:
     type: Recreate
-  replicas: 1
   selector:
     matchLabels:
       app: sonarr
@@ -16,63 +17,72 @@ spec:
       labels:
         app: sonarr
     spec:
+      # Pod-level security so ownership/permissions are consistent across mounts
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
       initContainers:
-        - name: fix-downloads-perms
-          image: ubuntu:latest
+        # Single authoritative init container to create dirs and set ownership on the PVC root
+        - name: init-media-dirs
+          image: busybox
+          securityContext:
+            runAsUser: 0
           command:
-          - sh
-          - -c
-          - |
-            mkdir -p /downloads/sabnzbd/complete
-            chown -R 1000:1000 /downloads
-            ls -la /downloads/sabnzbd
+            - sh
+            - -c
+            - |
+              set -e
+              mkdir -p /downloads/sabnzbd/complete
+              mkdir -p /downloads/sabnzbd/incomplete
+              mkdir -p /data/media/tv /data/media/movies
+              chown -R 1000:1000 /data
+              chmod -R 775 /data
           volumeMounts:
             - name: mediaserver-volume
-              mountPath: /downloads
+              mountPath: /data
+        # existing config init container (keeps your current behaviour)
         - name: config-sonarr
           image: docker.io/ubuntu:groovy
-          command: [/init-sonarr/init-sonarr.sh]
-          volumeMounts:
-            - mountPath: /init-sonarr
-              name: init-files-sonarr
-            - name: pvc-sonarr-config
-              mountPath: /sonarr-config
+          command:
+            - /init-sonarr/init-sonarr.sh
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
+          volumeMounts:
+            - mountPath: /init-sonarr
+              name: init-files-sonarr
+            - mountPath: /sonarr-config
+              name: pvc-sonarr-config
       containers:
         - name: k8s-mediaserver
+          image: docker.io/linuxserver/sonarr:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: sonarr-config
-          image: docker.io/linuxserver/sonarr:latest
-          imagePullPolicy: Always
-          readinessProbe:
-            httpGet:
-              path: /sonarr/ping
-              port: 8989
-            initialDelaySeconds: 10
-            periodSeconds: 20
-            timeoutSeconds: 20
           ports:
             - name: sonarr-port
               containerPort: 8989
               protocol: TCP
-          volumeMounts:
-            - name: pvc-sonarr-config
-              mountPath: /config
-            - name: mediaserver-volume
-              mountPath: /downloads
-            - name: mediaserver-volume
-              mountPath: /tv
-              subPath: media/tv
+          readinessProbe:
+            httpGet:
+              path: /sonarr/ping
+              port: 8989
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 20
+          # Container-level security ensures process runs as the correct UID/GID
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
+          volumeMounts:
+            - name: pvc-sonarr-config
+              mountPath: /config
+            # single shared mount at /data (no subPath)
+            - name: mediaserver-volume
+              mountPath: /data
       volumes:
         - name: mediaserver-volume
           persistentVolumeClaim:
@@ -82,5 +92,5 @@ spec:
             claimName: pvc-sonarr-config
         - name: init-files-sonarr
           configMap:
-            defaultMode: 493
             name: init-sonarr-cm
+            defaultMode: 493
