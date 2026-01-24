@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: recyclarr-sync
+  namespace: media
+spec:
+  schedule: "0 3 * * *"    # daily at 03:00 UTC, change to your preferred cron
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: recyclarr
+              image: ghcr.io/recyclarr/recyclarr:latest
+              args: ["sync", "--config", "/config/recyclarr.yml"]
+              env:
+                - name: RECYCLARR_APP_DATA
+                  value: "/config"
+              volumeMounts:
+                - name: recyclarr-config
+                  mountPath: /config/recyclarr.yml
+                  subPath: recyclarr.yml
+                - name: recyclarr-api-keys
+                  mountPath: /config/secrets.yml
+                  subPath: secrets.yml
+          volumes:
+            - name: recyclarr-config
+              configMap:
+                name: recyclarr-config
+            - name: recyclarr-api-keys
+              secret:
+                secretName: recyclarr-api-keys
+                items:
+                  - key: secrets.yml
+                    path: secrets.yml
