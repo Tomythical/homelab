@@ -70,9 +70,6 @@ spec:
             - name: mediaserver-volume
               mountPath: /tv
               subPath: media/tv
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
       volumes:
         - name: mediaserver-volume
           persistentVolumeClaim:
