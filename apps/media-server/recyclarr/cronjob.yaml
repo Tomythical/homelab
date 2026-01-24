@@ -31,6 +31,3 @@ spec:
             - name: recyclarr-config
               configMap:
                 name: recyclarr-config
-            - name: recyclarr-api-keys
-              secret:
-                secretName: recyclarr-api-keys
