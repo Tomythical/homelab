@@ -53,6 +53,9 @@ spec:
               mountPath: /config
             - name: mediaserver-volume
               mountPath: /data
+            - name: dri
+              mountPath: /dev/dri
+              readOnly: true
       volumes:
         - name: mediaserver-volume
           persistentVolumeClaim:
@@ -60,3 +63,7 @@ spec:
         - name: pvc-jellyfin-config
           persistentVolumeClaim:
             claimName: pvc-jellyfin-config
+        - name: dri
+          hostPath:
+            path: /dev/dri
+            type: Directory
