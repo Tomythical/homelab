@@ -114,6 +114,60 @@ data:
                   - WEBRip-2160p
 
         custom_formats:
+          # Block ALL Dolby Vision (WEB + Disc)
+          - trash_ids:
+              - b337d6812e06c200ec9a2d3cfa9d20a7   # DV Boost
+              - f700d29429c023a5734505e77daeaea7   # DV (Disk)
+              - 923b6abef9b17f937fab56cfcf89e1f1   # DV (w/o HDR fallback)
+            assign_scores_to:
+              - name: WEB 2160p
+                score: -10000
+
+          # Block TrueHD (always forces audio transcode)
+          - trash_ids:
+              - 3cafb66171b47f226146a0770576870f   # TrueHD
+              - 496f355514737f7d83bf7aa4d24f8169   # TrueHD ATMOS
+            assign_scores_to:
+              - name: WEB 2160p
+                score: -10000
+
+          # Mildly penalise DD+ Atmos
+          - trash_ids:
+              - 1af239278386be2919e1bcee0bde047e   # DD+ ATMOS
+            assign_scores_to:
+              - name: WEB 2160p
+                score: -100
+
+          # 2) Block other DV variants (optional / defensive)
+          - trash_ids:
+              - f700d29429c023a5734505e77daeaea7 # DV (Disk)
+              - b337d6812e06c200ec9a2d3cfa9d20a7 # DV Boost
+            assign_scores_to:
+              - name: WEB 2160p
+                score: -10000
+
+          # 3) Prefer HDR10 / HDR10+ (raise score so these beat other releases)
+          - trash_ids:
+              - 493b6d1dbec3c3364c59d7607f7e3405 # HDR
+              - caa37d0df9c348912df1fb1d88f9273a # HDR10+ Boost
+            assign_scores_to:
+              - name: WEB 2160p
+                score: 500
+
+          # 4) Prefer x265 releases that explicitly say "no HDR/DV" (clean SDR/compatible HEVC)
+          - trash_ids:
+              - 839bea857ed2c0a8e084f3cbdbd65ecb # x265 (no HDR/DV)
+            assign_scores_to:
+              - name: WEB 2160p
+                score: 250
+
+          # 5) Deprioritise or block Dolby Atmos / DD+ ATMOS if audio transcoding is a concern
+          - trash_ids:
+              - 1af239278386be2919e1bcee0bde047e # DD+ ATMOS
+            assign_scores_to:
+              - name: WEB 2160p
+                score: -100
+
           # Optional
           - trash_ids:
               - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
