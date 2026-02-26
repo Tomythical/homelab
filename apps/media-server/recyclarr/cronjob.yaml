@@ -16,9 +16,12 @@ spec:
           containers:
             - name: recyclarr
               image: ghcr.io/recyclarr/recyclarr:latest
-              args: ["sync", "--config", "/config/recyclarr.yml"]
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  sync --config /config/recyclarr.yml"
               env:
-                - name: RECYCLARR_APP_DATA
+                - name: RECYCLARR_CONFIG_DIR
                   value: "/config"
               envFrom:
                 - secretRef:

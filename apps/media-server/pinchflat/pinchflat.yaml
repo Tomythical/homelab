@@ -15,7 +15,7 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/kieraneglin/pinchflat
+              repository: ghcr.io/tomythical/pinchflat
               tag: latest
             env:
               TZ: Europe/London
