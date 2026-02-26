@@ -16,6 +16,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    tailscale.com/expose: "true"
   name: sabnzbd-https
 spec:
   type: ClusterIP
