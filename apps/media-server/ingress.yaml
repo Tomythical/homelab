@@ -36,6 +36,13 @@ spec:
                 name: prowlarr
                 port:
                   number: 9696
+          - path: /pinchflat
+            pathType: Prefix
+            backend:
+              service:
+                name: pinchflat
+                port:
+                  number: 8080
   tls:
     - hosts:
         - media

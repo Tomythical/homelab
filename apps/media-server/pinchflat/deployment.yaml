@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pinchflat
+  namespace: media-server
+  labels:
+    app: sonarr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      containers:
+      - env:
+        - name: PORT
+          value: "80"
+        - name: TZ
+          value: Europe/London
+        - name: TZ_DATA_DIR
+          value: /tmp/elixir_tz_data
+        name: pinchflat
+        image: ghcr.io/tomythical/pinchflat:latest
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 80
+            name: pinchflat-port
+            protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthcheck
+            port: 80
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthcheck
+            port: 80
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 50m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /config
+          name: config
+        - mountPath: /downloads
+          name: media
+        - mountPath: /etc/yt-dlp
+          name: tmpfs
+          subPath: yt-dlp
+        - mountPath: /tmp
+          name: tmpfs
+          subPath: tmp
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        supplementalGroups:
+        - 44
+      serviceAccount: default
+      serviceAccountName: default
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: pinchflat
+      - name: media
+        persistentVolumeClaim:
+          claimName: mediaserver-rwo-pvc
+      - emptyDir: {}
+        name: tmpfs
