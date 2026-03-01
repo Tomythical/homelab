@@ -5,4 +5,5 @@ resources:
   - ocirepo.yaml
   - operator.yaml
   - openclaw.yaml
-  - secret.yaml
+  - openrouter-es.yaml
+  - channel-keys-es.yaml

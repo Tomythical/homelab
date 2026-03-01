@@ -6,6 +6,8 @@ spec:
   envFrom:
     - secretRef:
         name: openrouter-api-key
+    - secretRef:
+        name: openclaw-channel-keys
   config:
     mergeMode: merge
     raw:
