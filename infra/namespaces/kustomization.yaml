@@ -10,3 +10,4 @@ resources:
   - monitoring.yaml
   - n8n.yaml
   - kagent.yaml
+  - openclaw.yaml

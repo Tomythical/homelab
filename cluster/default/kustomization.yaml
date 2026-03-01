@@ -4,3 +4,4 @@ resources:
   - ../../apps/podinfo/
   - ../../apps/media-server/
   - ../../apps/n8n/
+  - ../../apps/openclaw/

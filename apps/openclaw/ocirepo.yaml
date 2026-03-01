@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: openclaw-operator-repo
+  namespace: apps
+spec:
+  interval: 1h
+  url: oci://ghcr.io/openclaw-rocks/charts/openclaw-operator
+  timeout: 3m
+  ref:
+    semver: "0.10.15"
