@@ -6,6 +6,13 @@ spec:
   envFrom:
     - secretRef:
         name: openrouter-api-key
+  config:
+    mergeMode: merge
+    raw:
+      agents:
+        defaults:
+          model:
+            primary: "openrouter/arcee-ai/trinity-large-preview:free"
   storage:
     persistence:
       enabled: true
