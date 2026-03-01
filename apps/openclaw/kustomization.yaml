@@ -3,4 +3,6 @@ kind: Kustomization
 namespace: openclaw
 resources:
   - ocirepo.yaml
-  - openclaw-operator.yaml
+  - operator.yaml
+  - openclaw.yaml
+  - secret.yaml

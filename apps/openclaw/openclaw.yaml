@@ -1,0 +1,12 @@
+apiVersion: openclaw.rocks/v1alpha1
+kind: OpenClawInstance
+metadata:
+  name: my-agent
+spec:
+  envFrom:
+    - secretRef:
+        name: openrouter-api-key
+  storage:
+    persistence:
+      enabled: true
+      size: 10Gi
