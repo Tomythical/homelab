@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: instaloader
+  namespace: n8n
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: instaloader
+  template:
+    metadata:
+      labels:
+        app: instaloader
+    spec:
+      containers:
+        - name: instaloader
+          image: ghcr.io/tomythical/instaloader:latest
+          ports:
+            - containerPort: 5632
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "500Mi"
+            limits:
+              cpu: "1"
+              memory: "2Gi"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5632
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5632
+            initialDelaySeconds: 30
+            periodSeconds: 10
