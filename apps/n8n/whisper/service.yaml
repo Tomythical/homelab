@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: instaloader
+  name: whisper
 spec:
   selector:
-    app: instaloader
+    app: whisper
   ports:
     - port: 80
-      targetPort: 5633
+      targetPort: 5632
   type: ClusterIP

@@ -1,39 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: instaloader
+  name: whisper
   namespace: n8n
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: instaloader
+      app: whisper
   template:
     metadata:
       labels:
-        app: instaloader
+        app: whisper
     spec:
       containers:
-        - name: instaloader
-          image: ghcr.io/tomythical/instaloader:latest
+        - name: whisper
+          image: ghcr.io/tomythical/whisper:latest
           ports:
-            - containerPort: 5633
+            - containerPort: 5632
           resources:
             requests:
-              cpu: "100m"
-              memory: "100Mi"
+              cpu: "500m"
+              memory: "500Mi"
             limits:
               cpu: "1"
-              memory: "1Gi"
+              memory: "2Gi"
           readinessProbe:
             httpGet:
               path: /health
-              port: 5633
+              port: 5632
             initialDelaySeconds: 10
             periodSeconds: 5
           livenessProbe:
             httpGet:
               path: /health
-              port: 5633
+              port: 5632
             initialDelaySeconds: 30
             periodSeconds: 10
