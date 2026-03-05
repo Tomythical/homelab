@@ -37,3 +37,10 @@ spec:
               port: 5632
             initialDelaySeconds: 30
             periodSeconds: 10
+          volumeMounts:
+            - name: workflows-pvc
+              mountPath: /tmp
+      volumes:
+        - name: workflows-pvc
+          persistentVolumeClaim:
+            claimName: workflows-pvc

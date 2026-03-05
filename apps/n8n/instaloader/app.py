@@ -1,4 +1,5 @@
 import re
+import os
 import sys
 import logging
 from flask import Flask, request, jsonify
@@ -6,6 +7,9 @@ from instaloader import Instaloader, Post
 
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
+
+if not os.path.exists("/tmp/instaloader"):
+    os.makedirs("/tmp/instaloader")
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -15,7 +19,7 @@ logging.basicConfig(
 )
 
 L = Instaloader(
-    dirname_pattern="/data/instaloader/{shortcode}",
+    dirname_pattern="/tmp/instaloader/{shortcode}",
     filename_pattern="{shortcode}",
     download_comments=False,
 )
@@ -30,7 +34,7 @@ def scrape_post(shortcode):
     return jsonify(
         {
             "shortcode": shortcode,
-            "video": f"/data/instaloader/{shortcode}/{shortcode}.mp4",
+            "video": f"/tmp/instaloader/{shortcode}/{shortcode}.mp4",
             "description": post.caption or "",
         }
     )
