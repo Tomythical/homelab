@@ -8,3 +8,7 @@ spec:
     kind: OCIRepository
     name: openclaw-operator-repo
     namespace: openclaw
+  values:
+    serviceAccount:
+      annotations:
+      tailscale.com/expose: "true"

@@ -15,7 +15,46 @@ spec:
         defaults:
           model:
             primary: "openrouter/arcee-ai/trinity-large-preview:free"
+
+  gateway:
+    existingSecret: my-agent-gateway-token
+
   storage:
     persistence:
       enabled: true
       size: 10Gi
+
+  chromium:
+    enabled: false
+    image:
+      repository: ghcr.io/browserless/chromium
+      tag: "v2.42.0"
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "512Mi"
+      limits:
+        cpu: "1000m"
+        memory: "2Gi"
+    persistence:
+      enabled: true
+      storageClass: local-path     # uses cluster default if empty
+      size: "1Gi"
+
+  selfConfigure:
+    enabled: false
+    allowedActions: [skills, config, envVars, workspaceFiles]
+
+  webTerminal:
+    enabled: false
+    readOnly: false
+    # credential:
+    #   secretRef:
+    #     name: my-terminal-creds
+    resources:
+      requests:
+        cpu: "50m"
+        memory: "64Mi"
+      limits:
+        cpu: "200m"
+        memory: "128Mi"

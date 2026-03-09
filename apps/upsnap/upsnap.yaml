@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+  labels:
+    app: upsnap
+  name: upsnap
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upsnap
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: upsnap
+    spec:
+      hostNetwork: true
+      containers:
+        - image: ghcr.io/seriousm4x/upsnap:5
+          name: upsnap
+          securityContext:
+            runAsGroup: 1000
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - NET_RAW
+            seccompProfile:
+              type: RuntimeDefault
+          ports:
+            - containerPort: 8090
+          volumeMounts:
+            - mountPath: /app/pb_data
+              name: upsnap
+          env:
+            - name: TZ
+              value: Europe/London
+      restartPolicy: Always
+      volumes:
+        - name: upsnap
+          persistentVolumeClaim:
+            claimName: upsnap

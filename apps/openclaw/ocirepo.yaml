@@ -8,4 +8,4 @@ spec:
   url: oci://ghcr.io/openclaw-rocks/charts/openclaw-operator
   timeout: 3m
   ref:
-    semver: "0.10.15"
+    semver: "^0.10.0"

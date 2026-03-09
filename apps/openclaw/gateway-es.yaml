@@ -1,0 +1,15 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: openclaw-gateway-token
+spec:
+  secretStoreRef:
+    kind: SecretStore
+    name: doppler-auth-api
+  target:
+    name: openclaw-gateway-token
+    creationPolicy: Owner
+  data:
+    - secretKey: OPENCLAW_GATEWAY_TOKEN
+      remoteRef:
+        key: OPENCLAW_GATEWAY_TOKEN
