@@ -41,7 +41,7 @@ def scrape_post(shortcode):
 
 
 def extract_shortcode(url):
-    match = re.search(r"(?:reel|p)/([A-Za-z0-9_-]+)/", url)
+    match = re.search(r"(?:reel|reels|p)/([A-Za-z0-9_-]+)/", url)
     if not match:
         logger.info(f"Error: Could not extract shortcode from URL '{url}'")
         return jsonify({"error": "Invalid URL format"}), 400
