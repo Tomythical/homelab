@@ -22,10 +22,8 @@ spec:
         - image: ghcr.io/seriousm4x/upsnap:5
           name: upsnap
           securityContext:
-            runAsGroup: 1000
-            runAsUser: 1000
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
+            runAsNonRoot: false
             capabilities:
               drop:
                 - ALL

@@ -4,3 +4,4 @@ namespace: automation
 resources:
   - upsnap.yaml
   - pvc.yaml
+  - service.yaml
