@@ -1,0 +1,58 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamystats-nextjs
+  namespace: media-server
+  labels:
+    app: streamystats-nextjs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streamystats-nextjs
+  template:
+    metadata:
+      labels:
+        app: streamystats-nextjs
+    spec:
+      containers:
+        - name: nextjs
+          image: ghcr.io/fredrikburmester/streamystats-nextjs:latest
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: streamystats-postgres
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: streamystats-postgres
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: streamystats-postgres
+                  key: POSTGRES_DB
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@streamystats-db:5432/$(POSTGRES_DB)"
+            - name: JOB_SERVER_URL
+              value: "http://streamystats-job-server:3005"
+            - name: HOSTNAME
+              value: "0.0.0.0"
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: streamystats-secrets
+                  key: SESSION_SECRET
+            - name: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: streamystats-secrets
+                  key: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+          ports:
+            - containerPort: 3000
+              name: http

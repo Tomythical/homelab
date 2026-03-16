@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: streamystats-db
+  namespace: media-server
+spec:
+  ports:
+    - port: 5432
+      targetPort: postgres
+      name: postgres
+  selector:
+    app: streamystats-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: streamystats-job-server
+  namespace: media-server
+spec:
+  ports:
+    - port: 3005
+      targetPort: http
+      name: http
+  selector:
+    app: streamystats-job-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: streamystats-nextjs
+  namespace: media-server
+spec:
+  ports:
+    - name: "3000"
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: streamystats-nextjs

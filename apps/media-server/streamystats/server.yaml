@@ -1,0 +1,86 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamystats-job-server
+  namespace: media-server
+  labels:
+    app: streamystats-job-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: streamystats-job-server
+  template:
+    metadata:
+      labels:
+        app: streamystats-job-server
+    spec:
+      containers:
+        - name: job-server
+          image: ghcr.io/fredrikburmester/streamystats-job-server:latest
+          env:
+            - name: CRON_ACTIVITY_SYNC
+              value: '*/1 * * * *'
+            - name: CRON_DELETED_ITEMS_CLEANUP
+              value: 0 * * * *
+            - name: CRON_EMBEDDINGS_SYNC
+              value: '*/15 * * * *'
+            - name: CRON_FINGERPRINT_SYNC
+              value: 0 4 * * *
+            - name: CRON_FULL_SYNC
+              value: 0 2 * * *
+            - name: CRON_GEOLOCATION_SYNC
+              value: '*/5 * * * *'
+            - name: CRON_JOB_CLEANUP
+              value: '*/1 * * * *'
+            - name: CRON_OLD_JOB_CLEANUP
+              value: 0 3 * * *
+            - name: CRON_PEOPLE_SYNC
+              value: '*/15 * * * *'
+            - name: CRON_RECENT_ITEMS_SYNC
+              value: '*/1 * * * *'
+            - name: CRON_USER_SYNC
+              value: '*/1 * * * *'
+            - name: NODE_ENV
+              value: production
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: streamystats-postgres
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: streamystats-postgres
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: streamystats-postgres
+                  key: POSTGRES_DB
+            - name: DATABASE_URL
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@streamystats-db:5432/$(POSTGRES_DB)"
+            - name: HOST
+              value: 0.0.0.0
+            - name: PORT
+              value: "3005"
+            - name: SESSION_POLL_INTERVAL_MS
+              value: "5000"
+            - name: SKIP_STARTUP_FULL_SYNC
+              value: "false"
+          ports:
+            - containerPort: 3005
+              name: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3005
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3005
+            initialDelaySeconds: 10
+            periodSeconds: 10
