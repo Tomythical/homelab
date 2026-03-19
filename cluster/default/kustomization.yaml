@@ -6,3 +6,4 @@ resources:
   - ../../apps/n8n/
   - ../../apps/openclaw/
   - ../../apps/journiv/
+  - ../../apps/homepage/
