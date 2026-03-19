@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery-worker
+  template:
+    metadata:
+      labels:
+        app: celery-worker
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+      - name: init-permissions
+        image: busybox
+        securityContext:
+          runAsUser: 0
+        command: ["sh", "-c", "chown -R 1000:1000 /data && chmod -R 775 /data"]
+        volumeMounts:
+        - name: journiv-data
+          mountPath: /data
+          subPath: app
+      containers:
+      - name: celery-worker
+        image: swalabtech/journiv-app:latest
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: journiv-secrets
+              key: SECRET_KEY
+        - name: DB_DRIVER
+          value: "sqlite"
+        - name: DATABASE_URL
+          value: "sqlite:////data/journiv.db"
+        - name: REDIS_URL
+          value: "redis://valkey:6379/0"
+        - name: CELERY_BROKER_URL
+          value: "redis://valkey:6379/0"
+        - name: CELERY_RESULT_BACKEND
+          value: "redis://valkey:6379/0"
+        - name: SERVICE_ROLE
+          value: "celery-worker"
+        - name: ENVIRONMENT
+          value: "production"
+        volumeMounts:
+        - name: journiv-data
+          mountPath: /data
+          subPath: app
+      volumes:
+      - name: journiv-data
+        persistentVolumeClaim:
+          claimName: journiv-data

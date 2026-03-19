@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valkey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valkey
+  template:
+    metadata:
+      labels:
+        app: valkey
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+      - name: init-permissions
+        image: busybox
+        securityContext:
+          runAsUser: 0
+        command: ["sh", "-c", "chown -R 1000:1000 /data && chmod -R 775 /data"]
+        volumeMounts:
+        - name: journiv-data
+          mountPath: /data
+          subPath: valkey
+      containers:
+      - name: valkey
+        image: valkey/valkey:9.0-alpine
+        ports:
+        - containerPort: 6379
+        livenessProbe:
+          exec:
+            command: ["valkey-cli", "ping"]
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command: ["valkey-cli", "ping"]
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: journiv-data
+          mountPath: /data
+          subPath: valkey
+      volumes:
+      - name: journiv-data
+        persistentVolumeClaim:
+          claimName: journiv-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valkey
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: valkey

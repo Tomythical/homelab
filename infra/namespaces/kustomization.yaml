@@ -11,3 +11,4 @@ resources:
   - n8n.yaml
   - kagent.yaml
   - openclaw.yaml
+  - journiv.yaml

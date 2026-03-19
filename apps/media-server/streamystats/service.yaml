@@ -28,7 +28,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: streamystats-nextjs
+  annotations:
+    tailscale.com/expose: "true"
+  name: streamystats
   namespace: media-server
 spec:
   ports:
