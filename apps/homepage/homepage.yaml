@@ -22,6 +22,8 @@ spec:
       automountServiceAccountToken: true
       dnsPolicy: ClusterFirst
       enableServiceLinks: true
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: homepage
           image: "ghcr.io/gethomepage/homepage:latest"
@@ -54,6 +56,8 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 15
           volumeMounts:
+            - mountPath: /app/config
+              name: config
             - mountPath: /app/config/custom.js
               name: homepage-config
               subPath: custom.js
@@ -78,11 +82,9 @@ spec:
             - mountPath: /app/config/widgets.yaml
               name: homepage-config
               subPath: widgets.yaml
-            - mountPath: /app/config/logs
-              name: logs
       volumes:
         - name: homepage-config
           configMap:
             name: homepage
-        - name: logs
+        - name: config
           emptyDir: {}
