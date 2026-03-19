@@ -37,8 +37,6 @@ spec:
             secretKeyRef:
               name: journiv-secrets
               key: SECRET_KEY
-        - name: DOMAIN_NAME
-          value: "journiv" # Adjust as needed
         - name: DB_DRIVER
           value: "sqlite"
         - name: DATABASE_URL
@@ -54,7 +52,15 @@ spec:
         - name: SERVICE_ROLE
           value: "app"
         - name: ENVIRONMENT
-          value: "production"
+          value: "development"
+        - name: DISABLE_SIGNUP
+          value: "true"
+        - name: DEBUG
+          value: "true"
+        - name: LOG_LEVEL
+          value: "DEBUG"
+        - name: DOMAIN_NAME
+          value: "*.ts.net"
         volumeMounts:
         - name: journiv-data
           mountPath: /data
