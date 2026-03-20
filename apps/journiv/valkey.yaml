@@ -28,7 +28,7 @@ spec:
           subPath: valkey
       containers:
       - name: valkey
-        image: valkey/valkey:9.0-alpine
+        image: valkey/valkey:9.1-alpine
         ports:
         - containerPort: 6379
         livenessProbe:
