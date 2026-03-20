@@ -1,10 +1,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: jellyseerr
+  name: seerr
 spec:
   interval: 1h
-  url: oci://ghcr.io/fallenbagel/jellyseerr/jellyseerr-chart
+  url: oci://ghcr.io/seerr-team/seerr/seerr-chart
   timeout: 3m
   ref:
-    semver: ">=2.x"
+    semver: ">=3.x"
