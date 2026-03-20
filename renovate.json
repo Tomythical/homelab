@@ -1,6 +1,49 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
-  ]
+    "config:recommended",
+    ":rebaseStalePrs",
+    ":prImmediately",
+    ":prHourlyLimitNone",
+    ":prConcurrentLimitNone"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
+      "automerge": false
+    },
+    {
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "addLabels": [
+        "major-update"
+      ]
+    }
+  ],
+  "kubernetes": {
+    "fileMatch": [
+      "apps/.*\\.yaml$",
+      "infra/.*\\.yaml$"
+    ]
+  },
+  "flux": {
+    "fileMatch": [
+      "apps/.*\\.yaml$",
+      "infra/.*\\.yaml$"
+    ]
+  },
+  "dockerfile": {
+    "fileMatch": [
+      "apps/.*/Dockerfile$"
+    ]
+  }
 }
