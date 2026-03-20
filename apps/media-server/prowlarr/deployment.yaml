@@ -18,7 +18,7 @@ spec:
         fsGroup: 1000
       initContainers:
         - name: config-prowlarr
-          image: docker.io/ubuntu:groovy-20210723
+          image: docker.io/ubuntu:24.04
           command: [/init-prowlarr/init-prowlarr.sh]
           volumeMounts:
             - mountPath: /init-prowlarr
