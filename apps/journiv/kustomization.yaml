@@ -9,4 +9,4 @@ resources:
   - celery-beat.yaml
   - service.yaml
   - external-secret.yaml
-  # - ingress.yaml
+  - ingress.yaml

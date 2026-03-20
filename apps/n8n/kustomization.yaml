@@ -6,3 +6,4 @@ resources:
   - whisper/
   - instaloader/
   - workflows-pvc.yaml
+  - ingress.yaml

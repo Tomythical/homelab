@@ -5,3 +5,4 @@ resources:
   - upsnap.yaml
   - pvc.yaml
   - service.yaml
+  - ingress.yaml

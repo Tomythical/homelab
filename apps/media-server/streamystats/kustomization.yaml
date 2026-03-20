@@ -9,3 +9,4 @@ resources:
   - webpage.yaml
   - service.yaml
   - external-secret.yaml
+  - ingress.yaml

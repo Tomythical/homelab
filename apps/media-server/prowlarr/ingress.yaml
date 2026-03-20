@@ -1,0 +1,15 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prowlarr
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: prowlarr
+      port:
+        number: 9696
+  tls:
+    - hosts:
+        - prowlarr

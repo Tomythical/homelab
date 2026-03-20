@@ -7,7 +7,6 @@ metadata:
     app.kubernetes.io/name: homepage
   annotations:
     tailscale.com/expose: "true"
-    tailscale.com/hostname: "homepage"
 spec:
   type: ClusterIP
   ports:
