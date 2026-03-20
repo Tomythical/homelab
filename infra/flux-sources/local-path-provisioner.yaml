@@ -8,4 +8,4 @@ spec:
   url: https://github.com/rancher/local-path-provisioner
   ref:
     # pin to a stable release
-    tag: v0.0.31
+    tag: v0.0.35
