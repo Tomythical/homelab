@@ -7,6 +7,14 @@
     ":prHourlyLimitNone",
     ":prConcurrentLimitNone"
   ],
+  "hostRules": [
+    {
+      "hostType": "docker",
+      "matchHost": "docker.io",
+      "username": "tomythical",
+      "password": "{{ secrets.DOCKER_HUB_TOKEN }}"
+    }
+  ],
   "packageRules": [
     {
       "matchUpdateTypes": [
