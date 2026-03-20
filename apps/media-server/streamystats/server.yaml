@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: job-server
-          image: ghcr.io/fredrikburmester/streamystats-job-server:latest
+          image: ghcr.io/fredrikburmester/streamystats-job-server:v2.18.0
           env:
             - name: CRON_ACTIVITY_SYNC
               value: '*/1 * * * *'

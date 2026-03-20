@@ -53,7 +53,7 @@ spec:
               mountPath: /sabnzbd-config
       containers:
         - name: k8s-mediaserver
-          image: docker.io/linuxserver/sabnzbd:latest
+          image: docker.io/linuxserver/sabnzbd:4.5.5
           imagePullPolicy: Always
           envFrom:
             - configMapRef:

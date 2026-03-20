@@ -12,6 +12,9 @@ spec:
         name: n8n-charts
         namespace: flux-system
   values:
+    image:
+      tag: "2.12.3"
+
     main:
       count: 1
       persistence:

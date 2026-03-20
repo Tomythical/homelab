@@ -53,7 +53,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: radarr-config
-          image: docker.io/linuxserver/radarr:latest
+          image: docker.io/linuxserver/radarr:6.0.4
           imagePullPolicy: Always
           readinessProbe:
             httpGet:

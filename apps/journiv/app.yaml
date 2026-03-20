@@ -28,7 +28,7 @@ spec:
           subPath: app
       containers:
       - name: journiv-app
-        image: swalabtech/journiv-app:latest
+        image: swalabtech/journiv-app:0.1.0-beta.21
         ports:
         - containerPort: 8000
         env:

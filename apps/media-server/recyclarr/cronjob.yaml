@@ -15,7 +15,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: recyclarr
-              image: ghcr.io/recyclarr/recyclarr:latest
+              image: ghcr.io/recyclarr/recyclarr:8.5.1
               command: ["/bin/sh", "-c"]
               args:
                 - |
