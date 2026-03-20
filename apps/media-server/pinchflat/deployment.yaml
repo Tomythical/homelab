@@ -4,16 +4,16 @@ metadata:
   name: pinchflat
   namespace: media-server
   labels:
-    app: sonarr
+    app: pinchflat
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sonarr
+      app: pinchflat
   template:
     metadata:
       labels:
-        app: sonarr
+        app: pinchflat
     spec:
       containers:
       - env:
