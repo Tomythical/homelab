@@ -10,7 +10,7 @@
   "hostRules": [
     {
       "hostType": "docker",
-      "matchHost": "docker.io",
+      "matchHost": "index.docker.io",
       "username": "tomythical",
       "password": "{{ secrets.DOCKER_HUB_TOKEN }}"
     }
