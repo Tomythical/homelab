@@ -41,7 +41,7 @@ spec:
             - name: mediaserver-volume
               mountPath: /data
         - name: config-sabnzbd
-          image: docker.io/ubuntu:groovy
+          image: docker.io/ubuntu:groovy-20210723
           command: [/init-sabnzbd/init-sabnzbd.sh]
           securityContext:
             runAsUser: 1000

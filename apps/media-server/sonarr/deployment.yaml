@@ -41,7 +41,7 @@ spec:
               mountPath: /data
         # existing config init container (keeps your current behaviour)
         - name: config-sonarr
-          image: docker.io/ubuntu:groovy
+          image: docker.io/ubuntu:groovy-20210723
           command:
             - /init-sonarr/init-sonarr.sh
           securityContext:
