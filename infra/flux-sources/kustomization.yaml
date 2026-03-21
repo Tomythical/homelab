@@ -12,3 +12,4 @@ resources:
   - prometheus-community.yaml
   - n8n.yaml
   - kagent.yaml
+  - metrics-server.yaml
