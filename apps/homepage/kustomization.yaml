@@ -8,4 +8,4 @@ resources:
   - secret.yaml
   - configmap.yaml
   - clusterrole.yaml
-  # - ingress.yaml
+  - ingress.yaml
