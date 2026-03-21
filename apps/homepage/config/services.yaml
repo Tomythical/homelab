@@ -2,24 +2,382 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: services
-  namespace: homepage
+  namespace: media-server
   labels:
     app.kubernetes.io/name: homepage
 data:
   services.yaml: |
-    - Jellyfin:
+    ########################################################################################################################################################################################################
+    - Files Management:
         - Jellyfin:
-            href: https://jellyfin.tail537360.ts.net/web/
-            description: Watch Movies and TV Shows
-    - Seerr:
-        - Seerr:
-            href: https://seerr.tail537360.ts.net/
-            description: Request Movies and TV Shows
-    - Radaarr:
-        - Radaarr:
-            href: https://rafarr.tail537360.ts.net/
-            description: Automated Movie Collection Manager
-    - Sonarr:
+            icon: jellyfin.png
+            href: https://jellyfin.example.com
+            container: jellyfin
+            description: Multimedia streaming library
+            widget:
+                type: jellyfin
+                url: https://jellyfin.example.com
+                key: [REDACTED-KEY]
+                enableBlocks: true 
+                enableNowPlaying: false
+                enableUser: false
+                showEpisodeNumber: true 
+                expandOneStreamToTwoRows: false
+                fields: ["movies", "series", "songs"]
+
+    ########################################################################################################################################################################################################
+    - Media Processing:
+        - Jellyseerr:
+            icon: jellyseerr.png
+            href: https://jellyseerr.example.com
+            container: jellyseerr
+            description: Request new library media
+            widget:
+                type: jellyseerr
+                url: https://jellyseerr.example.com
+                key: [REDACTED-KEY]
+                fields: ["pending", "approved", "available"]
+
+        - SabNZBD:
+            icon: sabnzbd.png
+            href: https://sab.example.com
+            container: sabnzbd
+            description: Usenet download processor
+            widget:
+                type: sabnzbd
+                url: https://sab.example.com
+                key: [REDACTED-KEY]
+                fields: ["rate", "queue", "timeleft"]
+
+        - Prowlarr:
+            icon: /icons/services/prowlarr.png
+            href: https://prowlarr.example.com
+            container: prowlarr
+            description: Indexer integration for downloads
+            widget:
+                type: prowlarr
+                url: https://prowlarr.example.com
+                key: [REDACTED-KEY]
+                fields: ["numberOfGrabs", "numberOfQueries"]
+    ########################################################################################################################################################################################################
+    - Media Management:
+        - Radarr:
+            icon: /icons/services/radarr.png
+            href: https://radarr.example.com
+            container: radarr
+            description: Automate downloading movies
+            widget:
+                type: radarr
+                url: https://radarr.example.com
+                key: [REDACTED-KEY]
+                fields: ["wanted", "queued", "movies"]
+                
         - Sonarr:
-            href: https://sonarr.tail537360.ts.net/
-            description: Automated TV Collection Manager
+            icon: sonarr.png
+            href: https://sonarr.example.com
+            container: sonarr
+            description: Automate downloading series
+            widget:
+                type: sonarr
+                url: https://sonarr.example.com
+                key: [REDACTED-KEY]
+                fields: ["wanted", "queued", "series"]
+    ########################################################################################################################################################################################################
+    - System Monitoring:
+        - Scrutiny:
+            icon: /icons/services/scrutiny.png
+            href: https://scrutiny.example.com
+            container: scrutiny
+            description: Monitor hard drive health
+            widget:
+                type: scrutiny
+                url: https://scrutiny.example.com
+                fields: ["passed", "failed", "unknown"]
+
+        - Speedtest:
+            icon: speedtest-tracker.png
+            href: http://0.0.0.0
+            container: speedtest
+            description: Network speed tracker
+            widget:
+                type: speedtest
+                url: http://0.0.0.0
+                bitratePrecision: 0
+                fields: ["download", "upload", "ping"]
+
+    ########################################################################################################################################################################################################
+    - Tools Collection:
+        - Adminer:
+            icon: /icons/services/adminer.png
+            href: http://0.0.0.0/
+            container: adminer
+            description: Database management
+
+        - Netdata:
+            icon: /icons/services/netdata.png
+            href: http://0.0.0.0
+            container: netdata
+            description: Network monitoring utility
+
+        - Dozzle:
+            icon: /icons/services/dozzle.png
+            href: https://dozzle.example.com
+            container: dozzle
+            description: Docker container logs
+    ########################################################################################################################################################################################################
+    - Movies Library:
+      - _hidden:
+          href: https://jellyfin.example.com
+          widget:
+            type: customapi
+            url: https://home.example.com/static/stats.json
+            refreshInterval: 300000
+            display: grid
+            mappings:
+              - field:
+                  jellyfin:
+                    movies:
+                      count
+                label: "Movies"
+                format: number
+              - field:
+                  jellyfin:
+                    movies:
+                      storage
+                label: "Storage"
+                format: text
+              - field:
+                  jellyfin:
+                    movies:
+                      plays
+                label: "Plays"
+                format: number
+              - field:
+                  jellyfin:
+                    movies:
+                      runtime
+                label: "Runtime"
+                format: text
+    ########################################################################################################################################################################################################
+    - Series Library:
+      - _hidden:
+          href: https://jellyfin.example.com
+          widget:
+            type: customapi
+            url: https://home.example.com/static/stats.json
+            refreshInterval: 300000
+            display: grid
+            mappings:
+              - field:
+                  jellyfin:
+                    series:
+                      count
+                label: "Episodes"
+                format: number
+              - field:
+                  jellyfin:
+                    series:
+                      storage
+                label: "Storage"
+                format: text
+              - field:
+                  jellyfin:
+                    series:
+                      plays
+                label: "Plays"
+                format: number
+              - field:
+                  jellyfin:
+                    series:
+                      runtime
+                label: "Runtime"
+                format: text
+    ########################################################################################################################################################################################################
+    - Clips Library:
+      - _hidden:
+          href: https://clips.example.com
+          widget:
+              type: customapi
+              url: https://home.example.com/static/stats.json
+              refreshInterval: 300000
+              display: grid
+              mappings:
+                  - field:
+                        clips:
+                          files
+                    label: "Clips"
+                    format: number
+                  - field:
+                        clips:
+                          size
+                    label: "Storage"
+                    format: bytes
+                  - field:
+                      clips:
+                        game_count
+                    label: "Games"
+                    format: number
+                  - field:
+                      clips:
+                        runtime
+                    label: "Runtime"
+                    format: text
+    ########################################################################################################################################################################################################
+    - Watch Time:
+        - _hidden:
+            href: https://jellyfin.example.com
+            widget:
+              type: customapi
+              url: https://home.example.com/static/stats.json
+              refreshInterval: 300000
+              display: grid
+              mappings:
+                - field:
+                    jellyfin:
+                      watch_time:
+                        garnet
+                  label: "Garnet"
+                  format: text
+                - field:
+                    jellyfin:
+                      watch_time:
+                        rasta
+                  label: "Rasta"
+                  format: text
+                - field:
+                    jellyfin:
+                      watch_time:
+                        che
+                  label: "Che"
+                  format: text
+                - field:
+                    jellyfin:
+                      watch_time:
+                        feather
+                  label: "Feather"
+                  format: text
+    ########################################################################################################################################################################################################
+    - Popular Clients:
+        - _hidden:
+            href: https://jellyfin.example.com
+            widget:
+              type: customapi
+              url: https://home.example.com/static/stats.json
+              refreshInterval: 300000
+              display: grid
+              mappings:
+                - field:
+                    jellyfin:
+                      popular_clients:
+                        first
+                  label: "First"
+                  format: text
+                - field:
+                    jellyfin:
+                      popular_clients:
+                        second
+                  label: "Second"
+                  format: text
+                - field:
+                    jellyfin:
+                      popular_clients:
+                        third
+                  label: "Third"
+                  format: text
+                - field:
+                    jellyfin:
+                      popular_clients:
+                        fourth
+                  label: "Fourth"
+                  format: text
+    ########################################################################################################################################################################################################
+    - Release Calendar:
+      - ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ LEGEND:⠀⠀🟢=Series ⠀⠀🔵=Movie:
+              href: https://jellyfin.example.com
+              widget:
+                  type: calendar
+                  firstDayInWeek: monday
+                  view: monthly
+                  maxEvents: 10
+                  showTime: true
+                  timezone: America/Denver
+                  integrations:
+                    - type: sonarr
+                      service_group: Media Management
+                      service_name: Sonarr
+                      color: green
+                      params:
+                        unmonitored: false
+                    - type: radarr
+                      service_group: Media Management
+                      service_name: Radarr
+                      color: blue
+                      params:
+                        unmonitored: false
+    ########################################################################################################################################################################################################
+    - Document Directories:
+        - _hidden:
+            href: https://cloud.example.com
+            widget:
+                type: customapi
+                url: https://home.example.com/static/stats.json
+                refreshInterval: 300000
+                display: grid
+                mappings:
+                    - field:
+                        documents:
+                          garnet:
+                            stats
+                      label: "Garnet"
+                      format: text
+                    - field:
+                        documents:
+                          rasta:
+                            stats
+                      label: "Rasta"
+                      format: text
+                    - field:
+                        documents:
+                          che:
+                            stats
+                      label: "Che"
+                      format: text
+                    - field:
+                        documents:
+                          feather:
+                            stats
+                      label: "Feather"
+                      format: text
+        - _hidden:
+            href: https://cloud.example.com
+            widget:
+                type: customapi
+                url: https://home.example.com/static/stats.json
+                refreshInterval: 300000
+                display: list
+                mappings:
+                    - field:
+                        documents:
+                          combined:
+                            storage
+                      label: "TOTAL FILES"
+                      format: bytes
+                      additionalField:
+                        field:
+                          documents:
+                            combined:
+                              files
+                        format: number
+                        prefix: " - "
+                        suffix: " files"
+    ########################################################################################################################################################################################################
+    - Homepage Configuration:
+      - Official Docs:
+          icon: /icons/services/homepage-docs.png
+          href: https://gethomepage.dev/
+          description: documentation for configuring this dashboard
+      - CSS Styler:
+            icon: /icons/services/homepage-styler.png
+            href: https://gethomepage.dev/
+            description: script to style custom.css for this dashboard
+    ########################################################################################################################################################################################################

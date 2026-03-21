@@ -2,12 +2,58 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: widgets
-  namespace: homepage
+  namespace: media-server
   labels:
     app.kubernetes.io/name: homepage
 data:
   widgets.yaml: |
-    - Developer:
-        - Github:
-            - abbr: GH
-              href: https://github.com/
+    - logo:
+        icon: /icons/favicon-large.png
+
+    - greeting:
+        text_size: 4xl
+        text: Homepage 
+
+    - resources:
+        expanded: false
+        cpu: true 
+        cputemp: true
+        memory: true  
+        refresh: 1000
+
+    - greeting:
+        text_size: 4xl
+        text: —
+
+    - resources: 
+        expanded: false
+        uptime: true 
+        refresh: 1000
+
+    - datetime:
+        text_size: 4xl
+        format:
+            timeStyle: short
+            hour12: false
+
+    - datetime:
+        text_size: md
+        format:
+            dateStyle: long
+            hour12: false
+
+    - search:
+        provider: google 
+        focus: true
+        showSearchSuggestions: true
+        target: _parent
+
+    - openmeteo:
+        label: Location
+        latitude: 51.513437757683576
+        longitude: 0.007144050584081777
+        timezone: Europe/London
+        units: metric
+        cache: 5
+        format:
+          maximumFractionDigits: 0

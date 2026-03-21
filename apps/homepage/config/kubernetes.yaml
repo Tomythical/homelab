@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kubernetes
-  namespace: homepage
+  namespace: media-server
   labels:
     app.kubernetes.io/name: homepage
 data:

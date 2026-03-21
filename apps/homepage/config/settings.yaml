@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: settings
-  namespace: homepage
+  namespace: media-server
   labels:
     app.kubernetes.io/name: homepage
 data:
@@ -20,7 +20,7 @@ data:
     # Site Assets
     base: https://homepage.tail537360.ts.net
     background:
-      image: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+      image: https://unsplash.com/photos/mountain-dew-during-sunrise-xJ2tjuUHD9M
       blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
 
     # Layout Configuration

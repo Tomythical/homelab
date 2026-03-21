@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: custom-css
-  namespace: homepage
+  namespace: media-server
   labels:
     app.kubernetes.io/name: homepage
 data:

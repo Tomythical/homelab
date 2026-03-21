@@ -2,12 +2,39 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: bookmarks
-  namespace: homepage
+  namespace: media-server
   labels:
     app.kubernetes.io/name: homepage
 data:
   bookmarks.yaml: |
-    - Developer:
-        - Github:
-            - abbr: GH
-              href: https://github.com/
+    - _hidden0:
+        - Dashboard:
+          - icon: /icons/services/unraid.png
+            href: http://example.local:8090/Dashboard
+            description: ⠀
+
+        - Docker:
+          - icon: sh-docker
+            href: http://example.local:8090/Docker
+            description: ⠀
+
+        - Navigator:
+          - icon: files.png
+            href: http://example.local:8090/Settings/Browse?dir=/mnt
+            description: ⠀
+          
+        - Scripts:
+          - icon: /icons/services/scripts.png
+            href: http://example.local:8090/Settings/Userscripts
+            description: ⠀
+
+    - _hidden1:
+        - Cloudflare:
+          - icon: cloudflare.png
+            href: https://dash.cloudflare.com/[REDACTED-ZONE-ID]/example.com/dns/records
+            description: ⠀
+
+        - Flareddns:
+          - icon: /icons/services/flareddns.png
+            href: http://example.local:8090/Docker/UpdateContainer?xmlTemplate=edit:/path/to/config/template.xml
+            description: ⠀
