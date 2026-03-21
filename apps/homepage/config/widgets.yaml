@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: widgets
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  widgets.yaml: |
+    - Developer:
+        - Github:
+            - abbr: GH
+              href: https://github.com/

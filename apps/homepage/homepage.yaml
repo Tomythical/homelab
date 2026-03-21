@@ -60,33 +60,48 @@ spec:
           volumeMounts:
             - mountPath: /app/config
               name: config
-            - mountPath: /app/config/custom.js
-              name: homepage-config
-              subPath: custom.js
+            # - mountPath: /app/config/custom.js
+            #   name: homepage-config
+            #   subPath: custom.js
             - mountPath: /app/config/custom.css
-              name: homepage-config
+              name: custom-css-config
               subPath: custom.css
             - mountPath: /app/config/bookmarks.yaml
-              name: homepage-config
+              name: bookmarks-config
               subPath: bookmarks.yaml
-            - mountPath: /app/config/docker.yaml
-              name: homepage-config
-              subPath: docker.yaml
+            # - mountPath: /app/config/docker.yaml
+            #   name: homepage-config
+            #   subPath: docker.yaml
             - mountPath: /app/config/kubernetes.yaml
-              name: homepage-config
+              name: kubernetes-config
               subPath: kubernetes.yaml
             - mountPath: /app/config/services.yaml
-              name: homepage-config
+              name: services-config
               subPath: services.yaml
             - mountPath: /app/config/settings.yaml
-              name: homepage-config
+              name: settings-config
               subPath: settings.yaml
             - mountPath: /app/config/widgets.yaml
-              name: homepage-config
+              name: widgets-config
               subPath: widgets.yaml
       volumes:
-        - name: homepage-config
+        - name: custom-css-config
           configMap:
-            name: homepage
+            name: custom-css
+        - name: bookmarks-config
+          configMap:
+            name: bookmarks
+        - name: kubernetes-config
+          configMap:
+            name: kubernetes
+        - name: settings-config
+          configMap:
+            name: settings
+        - name: services-config
+          configMap:
+            name: services
+        - name: widgets-config
+          configMap:
+            name: widgets
         - name: config
           emptyDir: {}

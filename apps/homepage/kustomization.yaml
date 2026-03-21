@@ -6,6 +6,6 @@ resources:
   - service.yaml
   - serviceaccount.yaml
   - secret.yaml
-  - configmap.yaml
   - clusterrole.yaml
   - ingress.yaml
+  - config/

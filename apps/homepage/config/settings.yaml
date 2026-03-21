@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: settings
+  namespace: homepage
+  labels:
+    app.kubernetes.io/name: homepage
+data:
+  settings.yaml: |
+    title: Homepage
+    language: en
+    theme: dark
+    color: zinc
+    target: _self
+    headerStyle: boxed
+    statusStyle: "dot"
+    hideVersion: true
+    disableCollapse: true
+
+    # Site Assets
+    base: https://homepage.tail537360.ts.net
+    background:
+      image: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+      blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
+
+    # Layout Configuration
+    layout:
+      # HOME Tab Items
+      Files Management:
+          style: column
+          tab: HOME
+          icon: mdi-file-multiple
+      Media Processing:
+          style: column
+          tab: HOME
+          icon: mdi-multimedia
+      Media Management:
+          style: column
+          tab: HOME
+          icon: mdi-expansion-card
+      System Monitoring:
+          style: column
+          tab: HOME
+          icon: mdi-server
+      Cloud Services:
+          style: column
+          tab: HOME
+          icon: mdi-google-cloud
+      Sharing Platforms:
+          style: column
+          tab: HOME
+          icon: mdi-share-all
+      Tools Collection:
+          style: column
+          tab: HOME
+          icon: mdi-tools
+      Discord Bots:
+          style: column
+          tab: HOME
+          icon: mdi-robot
+      Game Servers:
+          style: column
+          tab: HOME
+          icon: mdi-gamepad-variant
+      _hidden0:
+          style: column
+          tab: HOME
+      _hidden1:
+          style: column
+          tab: HOME
+      # STAT Tab Items
+      Document Directories:
+          style: column
+          tab: STAT
+          icon: mdi-file-document-outline
+      Camera Galleries:
+          style: column
+          tab: STAT
+          icon: mdi-camera-outline
+      Music Libraries:
+          style: column
+          tab: STAT
+          icon: mdi-music-box-outline
+      Movies Library:
+          style: column
+          tab: STAT
+          icon: mdi-movie-roll
+      Series Library:
+          style: column
+          tab: STAT
+          icon: mdi-television-classic
+      Clips Library:
+          style: column
+          tab: STAT
+          icon: mdi-movie-outline
+      Watch Time:
+          style: column
+          tab: STAT
+          icon: mdi-account-group-outline
+      Popular Clients:
+          style: column
+          tab: STAT
+          icon: mdi-cellphone-link
+      Release Calendar:
+          style: column
+          tab: STAT
+          icon: mdi-calendar
+      # DEPS Tab Items
+      Databases:
+          style: column
+          tab: DEPS
+          icon: mdi-database
+      ⠀:
+          style: column
+          tab: DEPS
+      ⠀⠀:
+          style: column
+          tab: DEPS
+      ⠀⠀⠀:
+          style: column
+          tab: DEPS
+      ⠀⠀⠀⠀:
+          style: column
+          tab: DEPS
+      ⠀⠀⠀⠀⠀:
+          style: column
+          tab: DEPS
+      Homepage Configuration:
+          style: column
+          tab: DEPS
+          icon: mdi-home
