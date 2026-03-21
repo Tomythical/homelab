@@ -26,7 +26,19 @@ data:
     - Jellyfin:
         - Jellyfin:
             href: https://jellyfin.tail537360.ts.net/web/
-            description: Jellyin
+            description: Watch Movies and TV Shows
+    - Seerr:
+        - Seerr:
+            href: https://seerr.tail537360.ts.net/
+            description: Request Movies and TV Shows
+    - Radaarr:
+        - Radaarr:
+            href: https://rafarr.tail537360.ts.net/
+            description: Automated Movie Collection Manager
+    - Sonarr:
+        - Sonarr:
+            href: https://sonarr.tail537360.ts.net/
+            description: Automated TV Collection Manager
   widgets.yaml: |
     - kubernetes:
         cluster:
