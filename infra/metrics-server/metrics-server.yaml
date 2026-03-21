@@ -15,9 +15,8 @@ spec:
   values:
     apiService:
       create: true
-    extraArgs:
+    args:
       - --kubelet-insecure-tls
-      - --kubelet-preferred-address-types=InternalIP
     resources:
       requests:
         cpu: 50m
