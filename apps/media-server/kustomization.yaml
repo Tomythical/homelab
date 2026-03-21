@@ -4,7 +4,7 @@ namespace: media-server
 resources:
   - pvc.yaml
   - secret-store.yaml
-  - jellyseerr/
+  - seerr/
   - jellyfin/
   - prowlarr/
   - radarr/
