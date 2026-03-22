@@ -86,10 +86,15 @@ spec:
               subPath: widgets.yaml
             - name: mediaserver-volume
               mountPath: /media
+            - name: homepage-config
+              mountPath: /assets
       volumes:
         - name: mediaserver-volume
           persistentVolumeClaim:
             claimName: mediaserver-rwo-pvc
+        - name: homepage-config
+          persistentVolumeClaim:
+            claimName: homepage-config
         - name: custom-css-config
           configMap:
             name: custom-css

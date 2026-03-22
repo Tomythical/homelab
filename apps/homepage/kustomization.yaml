@@ -9,3 +9,4 @@ resources:
   - clusterrole.yaml
   - ingress.yaml
   - config/
+  - pvc.yaml
