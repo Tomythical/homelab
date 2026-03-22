@@ -7,5 +7,5 @@ resources:
   - ../../infra/local-path-provisioner/
   - ../../infra/external-secrets/
   - ../../infra/kube-prometheus/
-  - ../../infra/kagent/
+  # - ../../infra/kagent/
   - ../../infra/metrics-server/
