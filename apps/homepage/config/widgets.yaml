@@ -19,6 +19,7 @@ data:
         cpu: true 
         cputemp: true
         memory: true  
+        disk: /media
         refresh: 1000
 
     - greeting:
