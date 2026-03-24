@@ -15,10 +15,22 @@ spec:
         namespace: flux-system
   values:
     grafana:
-      service:
-        annotations:
-          "tailscale.com/expose": "true"
-    alertmanager:
-      service:
-        annotations:
-          "tailscale.com/expose": "true"
+      persistence:
+        enabled: true
+        type: sts
+        storageClassName: "local-path"
+        accessModes:
+          - ReadWriteOnce
+        size: 10Gi
+    prometheus:
+      prometheusSpec:
+        retentionSize: "40GB"
+        retention: "30d"
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              storageClassName: "local-path"
+              resources:
+                requests:
+                  storage: 50Gi
