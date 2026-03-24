@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: monitoring
 resources:
   - kube-prometheus.yaml
+  - ingress.yaml
