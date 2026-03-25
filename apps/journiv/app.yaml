@@ -54,7 +54,7 @@ spec:
         - name: ENVIRONMENT
           value: "development"
         - name: DISABLE_SIGNUP
-          value: "true"
+          value: "false"
         - name: DEBUG
           value: "true"
         - name: LOG_LEVEL

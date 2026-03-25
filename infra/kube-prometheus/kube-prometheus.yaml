@@ -15,6 +15,7 @@ spec:
         namespace: flux-system
   values:
     grafana:
+      adminPassword: admin
       persistence:
         enabled: true
         type: sts
@@ -22,6 +23,13 @@ spec:
         accessModes:
           - ReadWriteOnce
         size: 10Gi
+      podSecurityContext:
+        fsGroup: 472
+      containerSecurityContext:
+        runAsUser: 472
+        runAsGroup: 472
+      initChownData:
+        enabled: false
     prometheus:
       prometheusSpec:
         retentionSize: "40GB"
@@ -30,6 +38,7 @@ spec:
           runAsUser: 65534
           runAsGroup: 65534
           fsGroup: 65534
+          runAsNonRoot: true
         storageSpec:
           volumeClaimTemplate:
             spec:
