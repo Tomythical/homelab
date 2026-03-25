@@ -24,10 +24,6 @@ spec:
       extraEnvVars:
         N8N_SECURE_COOKIE: false
 
-    service:
-      annotations:
-        tailscale.com/expose: "true"
-
     worker:
       persistence:
         enabled: true

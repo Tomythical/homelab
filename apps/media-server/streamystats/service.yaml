@@ -28,8 +28,6 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    tailscale.com/expose: "true"
   name: streamystats
   namespace: media-server
 spec:

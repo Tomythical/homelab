@@ -36,14 +36,3 @@ spec:
       runAsGroup: 1000
       seccompProfile:
         type: RuntimeDefault
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              version: v1
-              kind: Service
-              name: jellyseerr
-            patch: |
-              - op: add
-                path: /metadata/annotations/tailscale.com~1expose
-                value: "true"
