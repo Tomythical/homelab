@@ -35,10 +35,10 @@ spec:
         retentionSize: "40GB"
         retention: "30d"
         securityContext:
-          runAsUser: 65534
-          runAsGroup: 65534
-          fsGroup: 65534
-          runAsNonRoot: true
+            runAsUser: 0
+            runAsNonRoot: false
+            runAsGroup: 0
+            fsGroup: 0
         storageSpec:
           volumeClaimTemplate:
             spec:
