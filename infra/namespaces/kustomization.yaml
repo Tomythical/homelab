@@ -12,3 +12,4 @@ resources:
   - kagent.yaml
   - openclaw.yaml
   - journiv.yaml
+  - pomerium.yaml

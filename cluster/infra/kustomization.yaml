@@ -9,3 +9,4 @@ resources:
   - ../../infra/kube-prometheus/
   # - ../../infra/kagent/
   - ../../infra/metrics-server/
+  - ../../infra/pomerium/

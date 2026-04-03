@@ -1,0 +1,100 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: pomerium-zero
+  name: pomerium
+  namespace: pomerium
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pomerium-zero
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: pomerium-zero
+    spec:
+      automountServiceAccountToken: true
+      containers:
+      - env:
+        - name: TMPDIR
+          value: /tmp/pomerium
+        - name: XDG_CACHE_HOME
+          value: /tmp/pomerium/cache
+        - name: XDG_DATA_HOME
+          value: /tmp/pomerium/cache
+        - name: POMERIUM_ZERO_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: pomerium_zero_token
+              name: pomerium
+              optional: false
+        - name: POMERIUM_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: BOOTSTRAP_CONFIG_FILE
+          value: /var/run/secrets/pomerium/bootstrap.dat
+        - name: BOOTSTRAP_CONFIG_WRITEBACK_URI
+          value: secret://$(POMERIUM_NAMESPACE)/pomerium/bootstrap
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        image: pomerium/pomerium:latest
+        imagePullPolicy: Always
+        name: pomerium
+        ports:
+        - containerPort: 443
+          name: https
+          protocol: TCP
+        - containerPort: 80
+          name: http
+          protocol: TCP
+        - containerPort: 9090
+          name: metrics
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 5000m
+            memory: 1Gi
+          requests:
+            cpu: 300m
+            memory: 200Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /tmp/pomerium
+          name: tmp
+        - mountPath: /var/run/secrets/pomerium
+          name: bootstrap
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      securityContext:
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+        sysctls:
+        - name: net.ipv4.ip_unprivileged_port_start
+          value: "80"
+      serviceAccountName: pomerium-zero
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - emptyDir: {}
+        name: tmp
+      - name: bootstrap
+        secret:
+          items:
+          - key: bootstrap
+            path: bootstrap.dat
+          optional: true
+          secretName: pomerium
