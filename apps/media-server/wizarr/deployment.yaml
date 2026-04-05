@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wizarr
+  namespace: media-server
+  labels:
+    app: wizarr
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: wizarr
+  template:
+    metadata:
+      labels:
+        app: wizarr
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: fix-wizarr-perms
+          image: busybox
+          securityContext:
+            runAsUser: 0
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              mkdir -p /data
+              mkdir -p /data/.cache
+              chown -R 1000:1000 /data
+              chmod -R 775 /data
+              mkdir -p /.gunicorn
+              chown -R 1000:1000 /.gunicorn
+              chmod -R 775 /.gunicorn
+          volumeMounts:
+            - name: pvc-wizarr-config
+              mountPath: /data
+            - name: gunicorn-dir
+              mountPath: /.gunicorn
+      containers:
+        - name: wizarr
+          image: ghcr.io/wizarrrr/wizarr:v2026.4.0
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: wizarr-config
+          ports:
+            - name: wizarr-port
+              containerPort: 5690
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5690
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5690
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: pvc-wizarr-config
+              mountPath: /data
+            - name: cache-volume
+              mountPath: /tmp
+            - name: gunicorn-dir
+              mountPath: /.gunicorn
+      volumes:
+        - name: pvc-wizarr-config
+          persistentVolumeClaim:
+            claimName: pvc-wizarr-config
+        - name: cache-volume
+          emptyDir: {}
+        - name: gunicorn-dir
+          emptyDir: {}

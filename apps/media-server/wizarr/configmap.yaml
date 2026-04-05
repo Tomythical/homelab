@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wizarr-config
+  namespace: media-server
+data:
+  PUID: "1000"
+  PGID: "1000"
+  TZ: "Europe/London"
+  DISABLE_BUILTIN_AUTH: "true"
+  GUNICORN_WORKERS: "2"
+  GUNICORN_CMD_ARGS: "--pid /tmp/gunicorn.pid --worker-tmp-dir /tmp"
+  XDG_CACHE_HOME: "/data/.cache"
+  TMPDIR: "/tmp"
