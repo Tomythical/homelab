@@ -13,3 +13,4 @@ resources:
   - openclaw.yaml
   - journiv.yaml
   - pomerium.yaml
+  - authentik.yaml

@@ -13,3 +13,4 @@ resources:
   - n8n.yaml
   - kagent.yaml
   - metrics-server.yaml
+  - authentik.yaml
