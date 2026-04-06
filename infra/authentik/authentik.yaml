@@ -13,47 +13,49 @@ spec:
         name: authentik-charts
         namespace: flux-system
   values:
-    # Secret configuration via ExternalSecret
+    global:
+      envFrom:
+        - secretRef:
+            name: authentik-bootstrap
     authentik:
-      secret_key:
-        existingSecret: authentik-secrets
-        existingSecretKey: secret_key
       postgresql:
-        password:
-          existingSecret: authentik-secrets
-          existingSecretKey: postgresql_password
-    
-    # Server configuration
+        name: authentik
+        user: authentik
+        port: 5432
+
+    postgresql:
+      enabled: true
+      auth:
+        database: authentik
+        username: authentik
+        existingSecret: authentik-bootstrap
+        secretKeys:
+          userPasswordKey: AUTHENTIK_POSTGRESQL_PASSWORD
+      # Persistent storage
+      primary:
+        persistence:
+          enabled: true
+          size: 512Mi
+          storageClass: local-path
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
     server:
-      replicaCount: 1
-      # External access configuration for Pomerium integration
-      # Note: For external access via Pomerium Cloud, authentik needs to be reachable
-      # at a specific hostname. We'll configure this but disable the default ingress
-      # since we're using Tailscale ingress for internal access.
-      ingress:
-        enabled: false  # Disable default ingress, we'll use Tailscale ingress
-      # Configure authentik for external access
+      enabled: true
       config:
-        # Enable error reporting (optional)
         error_reporting:
           enabled: false
           environment: "customer"
-        # Configure external URLs for OIDC integration
-        # Replace with your actual Pomerium Cloud domain
-        urls:
-          # Base URL for external access (via Pomerium proxy)
-          web: "https://auth.living-lemming-7780.pomerium.app"
-          # API URL (same as web for simplicity)
-          api: "https://auth.living-lemming-7780.pomerium.app"
-          # Admin interface URL
-          admin: "https://auth.living-lemming-7780.pomerium.app/if/admin"
-      # Security context
       securityContext:
         fsGroup: 1000
         runAsGroup: 1000
         runAsNonRoot: true
         runAsUser: 1000
-      # Resource limits
       resources:
         limits:
           cpu: 1000m
@@ -61,21 +63,7 @@ spec:
         requests:
           cpu: 200m
           memory: 256Mi
-      # Health checks
-      livenessProbe:
-        httpGet:
-          path: /-/health/live/
-          port: http
-        initialDelaySeconds: 30
-        periodSeconds: 10
-      readinessProbe:
-        httpGet:
-          path: /-/health/ready/
-          port: http
-        initialDelaySeconds: 30
-        periodSeconds: 10
-    
-    # Worker configuration
+
     worker:
       replicaCount: 1
       securityContext:
@@ -91,55 +79,6 @@ spec:
           cpu: 100m
           memory: 128Mi
     
-    # PostgreSQL configuration with persistence
-    postgresql:
-      enabled: true
-      auth:
-        password:
-          existingSecret: authentik-secrets
-          existingSecretKey: postgresql_password
-      # Persistent storage
-      primary:
-        persistence:
-          enabled: true
-          size: 512Mi
-          storageClass: local-path
-        resources:
-          limits:
-            cpu: 500m
-            memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-    
-    # Redis configuration for caching
-    redis:
-      enabled: true
-      architecture: standalone
-      auth:
-        password:
-          existingSecret: authentik-secrets
-          existingSecretKey: redis_password
-      master:
-        persistence:
-          enabled: true
-          size: 512Mi
-          storageClass: local-path
-        resources:
-          limits:
-            cpu: 500m
-            memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-    
-    # External database configuration (if needed)
-    externalDatabase:
-      host: ""
-      port: 5432
-      name: authentik
-      user: authentik
-    
     # Prometheus metrics
     metrics:
       enabled: true
@@ -147,10 +86,3 @@ spec:
         enabled: true
         labels:
           release: kube-prometheus-stack
-    
-    # Service configuration
-    service:
-      type: ClusterIP
-      ports:
-        http: 80
-        https: 443
