@@ -38,7 +38,7 @@ spec:
               name: journiv-secrets
               key: SECRET_KEY
         - name: DB_DRIVER
-          value: "postgresql"
+          value: "postgres"
         - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
@@ -55,7 +55,7 @@ spec:
         - name: SERVICE_ROLE
           value: "app"
         - name: ENVIRONMENT
-          value: "production"
+          value: "development"
         - name: DISABLE_SIGNUP
           value: "false"
         - name: DEBUG
