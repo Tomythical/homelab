@@ -25,18 +25,12 @@ spec:
         command:
           - sh
           - -c
-          - |
-            # Create directories if they don't exist
-            mkdir -p /var/lib/postgresql/data
-            mkdir -p /var/run/postgresql
-            # Set correct ownership for PostgreSQL
-            chown -R 999:999 /var/lib/postgresql/data /var/run/postgresql
-            # Set appropriate permissions
-            chmod -R 750 /var/lib/postgresql/data
-            chmod -R 755 /var/run/postgresql
+          - mkdir -p /var/lib/postgresql/data && mkdir -p /var/run/postgresql && chown -R 999:999 /var/lib/postgresql/data /var/run/postgresql && chmod -R 750 /var/lib/postgresql/data && chmod -R 755 /var/run/postgresql
         volumeMounts:
         - name: postgres-data
           mountPath: /var/lib/postgresql/data
+        - name: postgres-run
+          mountPath: /var/run/postgresql
       containers:
       - name: postgres
         image: postgres:15-alpine
@@ -62,6 +56,11 @@ spec:
         volumeMounts:
         - name: postgres-data
           mountPath: /var/lib/postgresql/data
+        - name: postgres-run
+          mountPath: /var/run/postgresql
+      volumes:
+      - name: postgres-run
+        emptyDir: {}
         resources:
           limits:
             cpu: 500m
