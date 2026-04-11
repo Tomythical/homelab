@@ -28,7 +28,7 @@ spec:
           subPath: app
       containers:
       - name: celery-worker
-        image: swalabtech/journiv-app:latest
+        image: swalabtech/journiv-app:0.1.0-beta.21
         env:
         - name: SECRET_KEY
           valueFrom:
@@ -36,9 +36,12 @@ spec:
               name: journiv-secrets
               key: SECRET_KEY
         - name: DB_DRIVER
-          value: "sqlite"
+          value: "postgresql"
         - name: DATABASE_URL
-          value: "sqlite:////data/journiv.db"
+          valueFrom:
+            secretKeyRef:
+              name: journiv-secrets
+              key: DATABASE_URL
         - name: REDIS_URL
           value: "redis://valkey:6379/0"
         - name: CELERY_BROKER_URL

@@ -4,9 +4,12 @@ namespace: journiv
 resources:
   - pvc.yaml
   - valkey.yaml
+  - postgres.yaml
+  - postgres-service.yaml
   - app.yaml
   - celery-worker.yaml
   - celery-beat.yaml
   - service.yaml
   - external-secret.yaml
   - ingress.yaml
+  - postgres-backup.yaml

@@ -38,9 +38,12 @@ spec:
               name: journiv-secrets
               key: SECRET_KEY
         - name: DB_DRIVER
-          value: "sqlite"
+          value: "postgresql"
         - name: DATABASE_URL
-          value: "sqlite:////data/journiv.db"
+          valueFrom:
+            secretKeyRef:
+              name: journiv-secrets
+              key: DATABASE_URL
         - name: REDIS_URL
           value: "redis://valkey:6379/0"
         - name: CELERY_BROKER_URL
@@ -52,7 +55,7 @@ spec:
         - name: SERVICE_ROLE
           value: "app"
         - name: ENVIRONMENT
-          value: "development"
+          value: "production"
         - name: DISABLE_SIGNUP
           value: "false"
         - name: DEBUG
