@@ -34,7 +34,7 @@ spec:
               mountPath: /config
       containers:
         - name: k8s-mediaserver
-          image: docker.io/linuxserver/jellyfin:10.11.6
+          image: docker.io/linuxserver/jellyfin:10.11.8
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
