@@ -7,9 +7,9 @@ spec:
   ingressClassName: tailscale
   defaultBackend:
     service:
-      name: sabnzbd
+      name: sabnzbd-https
       port:
-        number: 8080
+        number: 9090
   tls:
     - hosts:
         - sabnzbd
