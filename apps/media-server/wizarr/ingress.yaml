@@ -1,0 +1,15 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wizarr
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: wizarr
+      port:
+        number: 5690
+  tls:
+    - hosts:
+        - wizarr
