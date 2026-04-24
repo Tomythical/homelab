@@ -3,8 +3,6 @@ kind: HelmRelease
 metadata:
   name: tailscale-operator
   namespace: tailscale
-  annotations:
-    fluxcd.io/redeploy: "2026-04-24T12:45:00Z"
 spec:
   interval: 1h
   chart:
@@ -26,3 +24,5 @@ spec:
     apiServerProxyConfig:
       allowImpersonation: "true"
       mode: "true"
+    podAnnotations:
+      redeploy-at: "2026-04-24T12:50:00Z"
