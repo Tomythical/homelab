@@ -25,4 +25,4 @@ spec:
       allowImpersonation: "true"
       mode: "true"
     podAnnotations:
-      redeploy-at: "2026-04-24T13:05:00Z"
+      redeploy-at: "2026-04-28T13:05:00Z"
