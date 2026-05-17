@@ -12,7 +12,7 @@ spec:
     fullnameOverride: seerr
     image:
       repository: ghcr.io/seerr-team/seerr
-      tag: v3.1.0
+      tag: v3.2.0
     config:
       persistence:
         size: 1Gi
