@@ -19,7 +19,7 @@ spec:
               command: ["/bin/sh", "-c"]
               args:
                 - |
-                  recyclarr state repair --adopt && recyclarr sync
+                  recyclarr sync
               env:
                 - name: RECYCLARR_CONFIG_DIR
                   value: "/config"
