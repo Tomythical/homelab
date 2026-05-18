@@ -41,7 +41,7 @@ spec:
               mountPath: /data
         # existing config init container (keeps your current behaviour)
         - name: config-sonarr
-          image: docker.io/ubuntu:24.04
+          image: docker.io/ubuntu:26.04
           command:
             - /init-sonarr/init-sonarr.sh
           securityContext:
