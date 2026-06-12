@@ -37,8 +37,6 @@ spec:
         - name: tailscale-sidecar
           image: ghcr.io/tailscale/tailscale:v1.98.4
           env:
-            - name: TS_KUBE_SECRET
-              value: jellyfin-ts-secret
             - name: TS_AUTHKEY
               valueFrom:
                 secretKeyRef:
@@ -50,18 +48,15 @@ spec:
             capabilities:
               add:
                - NET_ADMIN
+          volumeMounts:
+            - name: dev-tun
+              mountPath: /dev/net/tun
         - name: k8s-mediaserver
           image: docker.io/linuxserver/jellyfin:10.11.8
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: jellyfin-config
-          env:
-            - name: TS_AUTHKEY
-              valueFrom:
-                secretKeyRef:
-                  name: jellyfin-ts-secret
-                  key: TS_AUTHKEY
           readinessProbe:
             tcpSocket:
               port: 8096
@@ -90,3 +85,7 @@ spec:
           hostPath:
             path: /dev/dri
             type: Directory
+        - name: dev-tun
+          hostPath:
+            path: /dev/net/tun
+            type: CharDevice
