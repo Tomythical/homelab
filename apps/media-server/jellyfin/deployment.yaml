@@ -13,6 +13,8 @@ spec:
       labels:
         app: jellyfin
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       securityContext:
         fsGroup: 1000
       serviceAccountName: tailscale
