@@ -43,7 +43,7 @@ spec:
                   name: jellyfin-ts-secret
                   key: TS_AUTHKEY
             - name: TS_USERSPACE
-              value: "false"
+              value: "true"
           securityContext:
             capabilities:
               add:
