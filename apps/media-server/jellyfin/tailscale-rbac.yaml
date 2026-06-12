@@ -9,7 +9,7 @@ metadata:
   name: tailscale
 rules:
   - apiGroups: [""]
-    resourceNames: ["tailscale-auth"]
+    resourceNames: ["jellyfin-ts-secret"]
     resources: ["secrets"]
     verbs: ["get", "update", "patch"]
 ---
