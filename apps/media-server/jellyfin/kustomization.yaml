@@ -7,3 +7,5 @@ resources:
   - deployment.yaml
   - pvc.yaml
   - ingress.yaml
+  - external-secret.yaml
+  - tailscale-rbac.yaml

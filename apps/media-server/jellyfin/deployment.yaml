@@ -15,6 +15,7 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+      serviceAccountName: tailscale
       initContainers:
         - name: fix-jellyfin-perms
           image: busybox
@@ -33,12 +34,34 @@ spec:
             - name: pvc-jellyfin-config
               mountPath: /config
       containers:
+        - name: tailscale-sidecar
+          image: ghcr.io/tailscale/tailscale:v1.98.4
+          env:
+            - name: TS_KUBE_SECRET
+              value: jellyfin-ts-secret
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: jellyfin-ts-secret
+                  key: TS_AUTHKEY
+            - name: TS_USERSPACE
+              value: "false"
+          securityContext:
+            capabilities:
+              add:
+               - NET_ADMIN
         - name: k8s-mediaserver
           image: docker.io/linuxserver/jellyfin:10.11.8
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: jellyfin-config
+          env:
+            - name: TS_AUTHKEY
+              valueFrom:
+                secretKeyRef:
+                  name: jellyfin-ts-secret
+                  key: TS_AUTHKEY
           readinessProbe:
             tcpSocket:
               port: 8096
