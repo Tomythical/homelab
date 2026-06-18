@@ -14,3 +14,4 @@ resources:
   - journiv.yaml
   - pomerium.yaml
   - authentik.yaml
+  - waha.yaml
