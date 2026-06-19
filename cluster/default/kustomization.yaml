@@ -4,7 +4,6 @@ resources:
   - ../../apps/podinfo/
   - ../../apps/media-server/
   - ../../apps/n8n/
-  - ../../apps/openclaw/
   - ../../apps/journiv/
   - ../../apps/homepage/
   - ../../apps/waha/

@@ -10,7 +10,7 @@ resources:
   - monitoring.yaml
   - n8n.yaml
   - kagent.yaml
-  - openclaw.yaml
+  # - openclaw.yaml
   - journiv.yaml
   - pomerium.yaml
   - authentik.yaml
