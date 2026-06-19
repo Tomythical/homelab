@@ -23,7 +23,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: waha
-          image: devlikeapro/waha:latest
+          image: devlikeapro/waha:noweb-2026.4.3
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
