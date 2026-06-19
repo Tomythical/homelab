@@ -33,7 +33,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: prowlarr-config
-          image: docker.io/linuxserver/prowlarr:2.3.5
+          image: docker.io/linuxserver/prowlarr:2.4.0
           imagePullPolicy: Always
           readinessProbe:
             httpGet:
