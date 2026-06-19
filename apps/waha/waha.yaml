@@ -46,6 +46,18 @@ spec:
               value: "Europe/London"
             - name: WAHA_PRINT_QR
               value: "False"
+            - name: WAHA_DASHBOARD_USERNAME
+              value: "admin"
+            - name: WAHA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: waha-secrets
+                  key: WAHA_API_KEY
+            - name: WAHA_DASHBOARD_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: waha-secrets
+                  key: WAHA_DASHBOARD_PASSWORD
           livenessProbe:
             httpGet:
               path: /ping
