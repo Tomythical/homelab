@@ -59,7 +59,7 @@ spec:
             - name: dev-tun
               mountPath: /dev/net/tun
         - name: k8s-mediaserver
-          image: docker.io/linuxserver/jellyfin:10.11.8
+          image: docker.io/linuxserver/jellyfin:10.11.11
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
