@@ -39,6 +39,9 @@ spec:
             - containerPort: 8000
               name: http
               protocol: TCP
+            - containerPort: 9080
+              name: restate
+              protocol: TCP
           env:
             - name: WAHA_API_URL
               value: "http://waha.waha.svc.cluster.local:3000"
@@ -46,6 +49,20 @@ spec:
               value: "http://poll-bot.waha.svc.cluster.local/webhook"
             - name: RESULTS_FILE
               value: "/data/results.json"
+            - name: RESTATE_SERVER_URL
+              value: "http://restate.restate.svc.cluster.local:9071"
+            - name: POLL_CHAT_ID
+              value: "447443588274@c.us"
+            - name: POLL_NAME
+              value: "Padel this week?"
+            - name: POLL_OPTIONS
+              value: "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"
+            - name: POLL_SELECTABLE_COUNT
+              value: "1"
+            - name: POLL_VOTING_SECONDS
+              value: "172800"
+            - name: PADEL_SLOT_IDX
+              value: "0"
             - name: WAHA_API_KEY
               valueFrom:
                 secretKeyRef:
