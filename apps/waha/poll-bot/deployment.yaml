@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: poll-bot
+  labels:
+    app: poll-bot
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: poll-bot
+  template:
+    metadata:
+      labels:
+        app: poll-bot
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: poll-bot
+          image: ghcr.io/tomythical/poll-bot:latest
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          ports:
+            - containerPort: 8000
+              name: http
+              protocol: TCP
+          env:
+            - name: WAHA_API_URL
+              value: "http://waha.waha.svc.cluster.local:3000"
+            - name: POLL_BOT_WEBHOOK_URL
+              value: "http://poll-bot.waha.svc.cluster.local/webhook"
+            - name: RESULTS_FILE
+              value: "/data/results.json"
+            - name: WAHA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: waha-secrets
+                  key: WAHA_API_KEY
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: poll-bot-data
