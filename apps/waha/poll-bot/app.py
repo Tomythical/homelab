@@ -1,31 +1,31 @@
 import json
 import os
 import threading
+from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import httpx
+import restate
 from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
-from restate import Context, Service, Workflow
-
-# ── FastAPI app (port 8000 ─ webhooks, direct API) ──────────────────────────
-
-app = FastAPI()
 
 WAHA_API_URL = os.getenv("WAHA_API_URL", "http://waha.waha.svc.cluster.local:3000")
 WAHA_API_KEY = os.getenv("WAHA_API_KEY", "")
-WEBHOOK_URL = os.getenv("POLL_BOT_WEBHOOK_URL", "http://poll-bot.waha.svc.cluster.local/webhook")
+WEBHOOK_URL = os.getenv(
+    "POLL_BOT_WEBHOOK_URL", "http://poll-bot.waha.svc.cluster.local/webhook"
+)
 RESULTS_FILE = os.getenv("RESULTS_FILE", "/data/results.json")
 
 POLL_CHAT_ID = os.getenv("POLL_CHAT_ID", "")
 POLL_NAME = os.getenv("POLL_NAME", "Padel this week?")
-POLL_OPTIONS = os.getenv("POLL_OPTIONS", "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday")
+POLL_OPTIONS = os.getenv(
+    "POLL_OPTIONS", "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"
+)
 POLL_SELECTABLE_COUNT = int(os.getenv("POLL_SELECTABLE_COUNT", "1"))
 POLL_VOTING_SECONDS = int(os.getenv("POLL_VOTING_SECONDS", "172800"))
 
 PADEL_SLOT_IDX = int(os.getenv("PADEL_SLOT_IDX", "0"))
-RESTATE_SERVER_URL = os.getenv("RESTATE_SERVER_URL", "http://restate.restate.svc.cluster.local:9071")
 
 _results_lock = threading.Lock()
 
@@ -62,11 +62,6 @@ class PollRequest(BaseModel):
     poll: PollOption
 
 
-@app.on_event("startup")
-def startup() -> None:
-    _configure_webhooks()
-
-
 def _configure_webhooks() -> None:
     try:
         with httpx.Client(timeout=10) as client:
@@ -99,6 +94,15 @@ def _configure_webhooks() -> None:
         print(f"Failed to list WAHA sessions: {e}")
 
 
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    _configure_webhooks()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+
+
 @app.post("/poll")
 def send_poll(req: PollRequest) -> dict:
     with httpx.Client(timeout=15) as client:
@@ -114,7 +118,9 @@ def send_poll(req: PollRequest) -> dict:
             raise HTTPException(status_code=resp.status_code, detail=resp.text)
 
         result = resp.json()
-        message_id = result.get("id", {}).get("_serialized") or result.get("key", {}).get("id")
+        message_id = result.get("id", {}).get("_serialized") or result.get(
+            "key", {}
+        ).get("id")
 
         if message_id:
             with _results_lock:
@@ -147,7 +153,10 @@ async def webhook(request: Request) -> dict:
         payload = event.get("payload", {})
         message_id = (
             payload.get("msgId", {}).get("_serialized")
-            or payload.get("message", {}).get("_data", {}).get("id", {}).get("_serialized")
+            or payload.get("message", {})
+            .get("_data", {})
+            .get("id", {})
+            .get("_serialized")
             or payload.get("id")
         )
 
@@ -155,7 +164,9 @@ async def webhook(request: Request) -> dict:
         voter = vote.get("sender", "")
 
         if isinstance(vote, dict):
-            selected = vote.get("selectedOptions", []) or vote.get("selectedOptionIds", [])
+            selected = vote.get("selectedOptions", []) or vote.get(
+                "selectedOptionIds", []
+            )
         else:
             continue
 
@@ -196,11 +207,9 @@ def health() -> dict:
     return {"status": "ok"}
 
 
-# ── Restate workflow (port 9080 ─ scheduled poll orchestration) ─────────────
+# ── Restate workflow (mounted on /restate/v1) ──────────────────────────────
 
-workflow = Workflow("pollScheduler")
-
-padel_service = Service("padelBooking")
+workflow = restate.Workflow("pollScheduler")
 
 
 def _send_poll_to_waha() -> str:
@@ -220,7 +229,9 @@ def _send_poll_to_waha() -> str:
         )
         resp.raise_for_status()
         result = resp.json()
-        message_id = result.get("id", {}).get("_serialized") or result.get("key", {}).get("id")
+        message_id = result.get("id", {}).get("_serialized") or result.get(
+            "key", {}
+        ).get("id")
 
         if message_id:
             with _results_lock:
@@ -260,7 +271,15 @@ def _determine_winner(poll_data: dict) -> dict:
 
     winner_day = max(vote_counts, key=vote_counts.get)
 
-    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
     target_day_idx = days.index(winner_day)
 
     now = datetime.now(timezone.utc)
@@ -281,45 +300,48 @@ def _determine_winner(poll_data: dict) -> dict:
     }
 
 
-@workflow.handler()
-async def schedule_poll(ctx: Context, _arg: dict | None = None) -> dict:
-    message_id = await ctx.run("send_poll", _send_poll_to_waha)
+@workflow.main()
+async def schedule_poll(ctx: restate.WorkflowContext) -> dict:
+    message_id = await ctx.run_typed("send_poll", _send_poll_to_waha)
     print(f"Poll sent: {message_id}")
 
-    await ctx.sleep(POLL_VOTING_SECONDS)
+    await ctx.sleep(delta=timedelta(seconds=POLL_VOTING_SECONDS))
     print(f"Voting period ended for {message_id}")
 
-    poll_data = await ctx.run("get_results", lambda: _get_poll_results(message_id))
+    poll_data = await ctx.run_typed(
+        "get_results", lambda: _get_poll_results(message_id)
+    )
 
-    winner = await ctx.run("determine_winner", lambda: _determine_winner(poll_data))
+    winner = await ctx.run_typed(
+        "determine_winner", lambda: _determine_winner(poll_data)
+    )
 
     if winner.get("winner"):
-        booking_result = await ctx.service_call(
+        booking_arg = json.dumps(
+            {
+                "date_pattern": winner["date_pattern"],
+                "slot_idx": PADEL_SLOT_IDX,
+            }
+        ).encode("utf-8")
+
+        booking_bytes = await ctx.generic_call(
             "padelBooking",
             "book",
             key="default",
-            arg={
-                "date_pattern": winner["date_pattern"],
-                "slot_idx": PADEL_SLOT_IDX,
-            },
+            arg=booking_arg,
         )
-        winner["booking"] = booking_result
+        winner["booking"] = json.loads(booking_bytes)
 
     return winner
 
 
-# ── Run both servers ────────────────────────────────────────────────────────
+# ── Mount Restate on FastAPI ────────────────────────────────────────────────
+
+restate_app = restate.app(services=[workflow])
+app.mount("/restate/v1", restate_app)
 
 if __name__ == "__main__":
     import uvicorn
-    from restate.endpoint import endpoint
 
-    restate_endpoint = endpoint(workflow, padel_service)
+    uvicorn.run(app, host="0.0.0.0", port=9080)
 
-    def _start_fastapi():
-        uvicorn.run(app, host="0.0.0.0", port=8000)
-
-    thread = threading.Thread(target=_start_fastapi, daemon=True)
-    thread.start()
-
-    restate_endpoint.run(host="0.0.0.0", port=9080)

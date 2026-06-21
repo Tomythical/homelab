@@ -8,10 +8,6 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 8000
-      name: http
-    - protocol: TCP
-      port: 9080
       targetPort: 9080
-      name: restate
+      name: http
   type: ClusterIP

@@ -1,9 +1,10 @@
+import json
 import os
 import random
 import re
 import time
 
-from restate import Context, Service
+import restate
 
 URL = "https://padelmates.se/club/instantpadelatcanadawater"
 
@@ -15,11 +16,11 @@ def _delay(min_s=0.5, max_s=1.5):
     time.sleep(random.uniform(min_s, max_s))
 
 
-def _book_court(date_pattern: str, slot_idx: int = 0) -> dict:
+def _book_court(date_pattern: str, slot_idx: int = 0) -> str:
     from playwright.sync_api import sync_playwright
 
     if not PADEL_PASSWORD:
-        return {"status": "error", "detail": "PADEL_PASSWORD not set"}
+        return json.dumps({"status": "error", "detail": "PADEL_PASSWORD not set"})
 
     with sync_playwright() as pw:
         browser = pw.chromium.launch(
@@ -57,16 +58,13 @@ def _book_court(date_pattern: str, slot_idx: int = 0) -> dict:
         """)
 
         try:
-            # step 1: open club page
             page.goto(URL)
             _delay()
 
-            # step 2: pick date
             _delay()
             page.get_by_role("button", name="Today").click()
             page.get_by_role("option", name=re.compile(date_pattern)).click()
 
-            # step 3: pick slot by index
             _delay()
             slots = page.locator(
                 "#root > div > div.mt-\\[80px\\] > div > div > div.px-4.md\\:px-2.lg\\:px-4.xl\\:px-7.mx-auto.flex.w-full.max-w-\\[1412px\\].justify-center.items-center > div > div.w-full.md\\:w-\\[calc\\(70\\%-4px\\)\\].lg\\:w-\\[calc\\(60\\%-8px\\)\\].xl\\:max-w-\\[850px\\].xl\\:w-\\[850px\\].md\\:mr-auto.flex.flex-col.gap-10.mt-8.md\\:mt-0 > div.md\\:block.hidden > div.md\\:block.hidden.mb-10.px-2.md\\:px-0 > div > div.overflow-hidden > div > div:nth-child(4) > div:nth-child(13) > div:nth-child(2) > div"
@@ -75,22 +73,18 @@ def _book_court(date_pattern: str, slot_idx: int = 0) -> dict:
             slot.hover()
             slot.click()
 
-            # step 4: pick 1h 30m session
             _delay()
             page.get_by_role("button", name=re.compile(r"1h 30m.*\u00a3")).click()
 
-            # step 5: book
             _delay()
             page.get_by_role("button", name=re.compile(r"Book \u00a3")).click()
 
-            # step 6: sign in
             _delay()
             page.get_by_role("textbox", name="Email address").fill(PADEL_USERNAME)
             page.get_by_role("textbox", name="Password").fill(PADEL_PASSWORD)
             _delay()
             page.get_by_role("button", name="Sign in", exact=True).click()
 
-            # step 7: payment flow
             _delay()
             page.get_by_role("button", name="Continue to payment").click()
             _delay()
@@ -99,23 +93,23 @@ def _book_court(date_pattern: str, slot_idx: int = 0) -> dict:
             page.get_by_role("button", name="Pay now").click()
             time.sleep(10)
 
-            return {"status": "booked", "date_pattern": date_pattern, "slot_idx": slot_idx}
+            return json.dumps({"status": "booked", "date_pattern": date_pattern, "slot_idx": slot_idx})
         except Exception:
-            return {"status": "error", "detail": "Booking failed — check Restate invocation for details"}
+            return json.dumps({"status": "error", "detail": "Booking failed"})
         finally:
             context.close()
             browser.close()
 
 
-service = Service("padelBooking")
+service = restate.Service("padelBooking")
 
 
 @service.handler()
-async def book(ctx: Context, arg: dict) -> dict:
+async def book(ctx: restate.Context, arg: dict) -> str:
     date_pattern = arg["date_pattern"]
     slot_idx = arg.get("slot_idx", 0)
 
-    result = await ctx.run(
+    result = await ctx.run_typed(
         "book_court",
         lambda: _book_court(date_pattern, slot_idx),
     )
@@ -123,7 +117,12 @@ async def book(ctx: Context, arg: dict) -> dict:
     return result
 
 
-if __name__ == "__main__":
-    from restate.endpoint import endpoint
+restate_app = restate.app(services=[service])
 
-    endpoint(service).run(host="0.0.0.0", port=9080)
+if __name__ == "__main__":
+    import hypercorn.asyncio
+    import asyncio
+
+    conf = hypercorn.Config()
+    conf.bind = ["0.0.0.0:9080"]
+    asyncio.run(hypercorn.asyncio.serve(restate_app, conf))

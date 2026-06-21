@@ -36,11 +36,8 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           ports:
-            - containerPort: 8000
-              name: http
-              protocol: TCP
             - containerPort: 9080
-              name: restate
+              name: http
               protocol: TCP
           env:
             - name: WAHA_API_URL
