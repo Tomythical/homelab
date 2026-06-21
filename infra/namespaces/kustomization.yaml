@@ -15,3 +15,4 @@ resources:
   - pomerium.yaml
   - authentik.yaml
   - waha.yaml
+  - restate.yaml

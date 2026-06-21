@@ -1,0 +1,32 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: restate
+  namespace: restate
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: restate-helm
+      sourceRef:
+        kind: HelmRepository
+        name: restate-repo
+        namespace: flux-system
+  values:
+    resources:
+      requests:
+        cpu: 250m
+        memory: 1Gi
+      limits:
+        cpu: 1
+        memory: 2Gi
+    storage:
+      size: 2Gi
+      storageClassName: local-path
+    env:
+      - name: RESTATE_LOG_FORMAT
+        value: json
+      - name: RESTATE_CLUSTER_NAME
+        value: homelab
+      - name: RESTATE_ROCKSDB_TOTAL_MEMORY_SIZE
+        value: 512Mi

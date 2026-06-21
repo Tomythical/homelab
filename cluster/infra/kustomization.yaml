@@ -10,3 +10,4 @@ resources:
   # - ../../infra/kagent/
   - ../../infra/metrics-server/
   - ../../infra/pomerium/
+  - ../../infra/restate/

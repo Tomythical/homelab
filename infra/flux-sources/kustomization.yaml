@@ -13,3 +13,4 @@ resources:
   - kagent.yaml
   - metrics-server.yaml
   - authentik.yaml
+  - restate.yaml
