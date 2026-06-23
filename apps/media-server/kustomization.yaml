@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: media-server
 resources:
   - pvc.yaml
-  - secret-store.yaml
   - seerr/
   - jellyfin/
   - prowlarr/
