@@ -31,11 +31,17 @@ spec:
         - -c
         - |
           chown -R 10000:10000 /opt/data
+          if [ ! -f /opt/data/config.yaml ]; then
+            cp /tmp-config/config.yaml /opt/data/config.yaml
+            chown 10000:10000 /opt/data/config.yaml
+          fi
           touch /shared/.dockerenv
           touch /shared/.containerenv
         volumeMounts:
         - name: hermes-data
           mountPath: /opt/data
+        - name: hermes-config
+          mountPath: /tmp-config
         - name: container-hints
           mountPath: /shared
       containers:
@@ -76,9 +82,6 @@ spec:
         volumeMounts:
         - name: hermes-data
           mountPath: /opt/data
-        - name: hermes-config
-          mountPath: /opt/data/config.yaml
-          subPath: config.yaml
         - name: container-hints
           mountPath: /.dockerenv
           subPath: .dockerenv
@@ -124,9 +127,6 @@ spec:
         volumeMounts:
         - name: hermes-data
           mountPath: /opt/data
-        - name: hermes-config
-          mountPath: /opt/data/config.yaml
-          subPath: config.yaml
         - name: container-hints
           mountPath: /.dockerenv
           subPath: .dockerenv
