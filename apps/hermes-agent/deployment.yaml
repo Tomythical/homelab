@@ -1,0 +1,144 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-agent
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: hermes-agent
+  template:
+    metadata:
+      labels:
+        app: hermes-agent
+    spec:
+      securityContext:
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+      initContainers:
+      - name: init-setup
+        image: busybox
+        securityContext:
+          runAsUser: 0
+        command:
+        - sh
+        - -c
+        - |
+          chown -R 10000:10000 /opt/data
+          touch /shared/.dockerenv
+          touch /shared/.containerenv
+        volumeMounts:
+        - name: hermes-data
+          mountPath: /opt/data
+        - name: container-hints
+          mountPath: /shared
+      containers:
+      - name: gateway
+        image: nousresearch/hermes-agent:latest
+        args:
+        - gateway
+        - run
+        envFrom:
+        - secretRef:
+            name: hermes-secrets
+        env:
+        - name: HERMES_HOME
+          value: "/opt/data"
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - -f
+            - gateway
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          exec:
+            command:
+            - pgrep
+            - -f
+            - gateway
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: "1"
+            memory: 2Gi
+        volumeMounts:
+        - name: hermes-data
+          mountPath: /opt/data
+        - name: hermes-config
+          mountPath: /opt/data/config.yaml
+          subPath: config.yaml
+        - name: container-hints
+          mountPath: /.dockerenv
+          subPath: .dockerenv
+        - name: container-hints
+          mountPath: /run/.containerenv
+          subPath: .containerenv
+      - name: dashboard
+        image: nousresearch/hermes-agent:latest
+        args:
+        - dashboard
+        - --host
+        - "0.0.0.0"
+        - --no-open
+        envFrom:
+        - secretRef:
+            name: hermes-secrets
+        env:
+        - name: HERMES_HOME
+          value: "/opt/data"
+        ports:
+        - containerPort: 9119
+          name: dashboard
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 9119
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 9119
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        volumeMounts:
+        - name: hermes-data
+          mountPath: /opt/data
+        - name: hermes-config
+          mountPath: /opt/data/config.yaml
+          subPath: config.yaml
+        - name: container-hints
+          mountPath: /.dockerenv
+          subPath: .dockerenv
+        - name: container-hints
+          mountPath: /run/.containerenv
+          subPath: .containerenv
+      volumes:
+      - name: hermes-data
+        persistentVolumeClaim:
+          claimName: hermes-data
+      - name: hermes-config
+        configMap:
+          name: hermes-config
+      - name: container-hints
+        emptyDir: {}

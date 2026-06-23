@@ -48,6 +48,8 @@ spec:
               value: "False"
             - name: WAHA_DASHBOARD_USERNAME
               value: "admin"
+            - name: WAHA_WEBHOOK_URL
+              value: "http://poll-bot.waha.svc.cluster.local/webhook"
             - name: WAHA_API_KEY
               valueFrom:
                 secretKeyRef:

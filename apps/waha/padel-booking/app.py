@@ -5,6 +5,8 @@ import re
 import time
 
 import restate
+from fastapi import FastAPI
+from pydantic import BaseModel
 
 URL = "https://padelmates.se/club/instantpadelatcanadawater"
 
@@ -12,15 +14,20 @@ PADEL_USERNAME = os.getenv("PADEL_USERNAME", "tomatheickal@hotmail.com")
 PADEL_PASSWORD = os.getenv("PADEL_PASSWORD", "")
 
 
+class BookRequest(BaseModel):
+    date_pattern: str
+    slot_idx: int = 0
+
+
 def _delay(min_s=0.5, max_s=1.5):
     time.sleep(random.uniform(min_s, max_s))
 
 
-def _book_court(date_pattern: str, slot_idx: int = 0) -> str:
+def _book_court(date_pattern: str, slot_idx: int = 0) -> dict:
     from playwright.sync_api import sync_playwright
 
     if not PADEL_PASSWORD:
-        return json.dumps({"status": "error", "detail": "PADEL_PASSWORD not set"})
+        return {"status": "error", "detail": "PADEL_PASSWORD not set"}
 
     with sync_playwright() as pw:
         browser = pw.chromium.launch(
@@ -93,13 +100,30 @@ def _book_court(date_pattern: str, slot_idx: int = 0) -> str:
             page.get_by_role("button", name="Pay now").click()
             time.sleep(10)
 
-            return json.dumps({"status": "booked", "date_pattern": date_pattern, "slot_idx": slot_idx})
+            return {"status": "booked", "date_pattern": date_pattern, "slot_idx": slot_idx}
         except Exception:
-            return json.dumps({"status": "error", "detail": "Booking failed"})
+            return {"status": "error", "detail": "Booking failed"}
         finally:
             context.close()
             browser.close()
 
+
+# ── FastAPI (raw /book endpoint for direct testing) ─────────────────────────
+
+app = FastAPI()
+
+
+@app.get("/health")
+def health() -> dict:
+    return {"status": "ok"}
+
+
+@app.post("/book")
+def book_endpoint(req: BookRequest) -> dict:
+    return _book_court(req.date_pattern, req.slot_idx)
+
+
+# ── Restate service ─────────────────────────────────────────────────────────
 
 service = restate.Service("padelBooking")
 
@@ -114,15 +138,15 @@ async def book(ctx: restate.Context, arg: dict) -> str:
         lambda: _book_court(date_pattern, slot_idx),
     )
 
-    return result
+    return json.dumps(result)
 
+
+# ── Mount Restate on FastAPI ────────────────────────────────────────────────
 
 restate_app = restate.app(services=[service])
+app.mount("/restate/v1", restate_app)
 
 if __name__ == "__main__":
-    import hypercorn.asyncio
-    import asyncio
+    import uvicorn
 
-    conf = hypercorn.Config()
-    conf.bind = ["0.0.0.0:9080"]
-    asyncio.run(hypercorn.asyncio.serve(restate_app, conf))
+    uvicorn.run(app, host="0.0.0.0", port=9080)

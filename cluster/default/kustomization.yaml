@@ -7,3 +7,4 @@ resources:
   - ../../apps/journiv/
   - ../../apps/homepage/
   - ../../apps/waha/
+  - ../../apps/hermes-agent/

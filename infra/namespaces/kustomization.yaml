@@ -16,3 +16,4 @@ resources:
   - authentik.yaml
   - waha.yaml
   - restate.yaml
+  - hermes-agent.yaml

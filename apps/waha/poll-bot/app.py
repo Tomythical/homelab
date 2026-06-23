@@ -12,6 +12,7 @@ from pydantic import BaseModel
 
 WAHA_API_URL = os.getenv("WAHA_API_URL", "http://waha.waha.svc.cluster.local:3000")
 WAHA_API_KEY = os.getenv("WAHA_API_KEY", "")
+WAHA_SESSION = os.getenv("WAHA_SESSION", "default")
 WEBHOOK_URL = os.getenv(
     "POLL_BOT_WEBHOOK_URL", "http://poll-bot.waha.svc.cluster.local/webhook"
 )
@@ -77,14 +78,14 @@ def _configure_webhooks() -> None:
                 if not session_name:
                     continue
                 try:
-                    client.post(
+                    existing = session.get("config", {})
+                    existing["webhooks"] = [{"url": WEBHOOK_URL, "events": ["poll.vote"]}]
+                    client.put(
                         f"{WAHA_API_URL}/api/sessions/{session_name}",
                         headers=_waha_headers(),
                         json={
                             "name": session_name,
-                            "config": {
-                                "webhook": {"url": WEBHOOK_URL, "events": ["poll.vote"]}
-                            },
+                            "config": existing,
                         },
                     )
                     print(f"Webhook configured for session: {session_name}")
@@ -105,39 +106,45 @@ app = FastAPI(lifespan=lifespan)
 
 @app.post("/poll")
 def send_poll(req: PollRequest) -> dict:
-    with httpx.Client(timeout=15) as client:
-        resp = client.post(
-            f"{WAHA_API_URL}/api/sendPoll",
-            headers=_waha_headers(),
-            json={
-                "chatId": req.chatId,
-                "poll": req.poll.model_dump(),
-            },
-        )
-        if resp.status_code >= 400:
-            raise HTTPException(status_code=resp.status_code, detail=resp.text)
-
-        result = resp.json()
-        message_id = result.get("id", {}).get("_serialized") or result.get(
-            "key", {}
-        ).get("id")
-
-        if message_id:
-            with _results_lock:
-                results = _load_results()
-                results[message_id] = {
+    try:
+        with httpx.Client(timeout=15) as client:
+            resp = client.post(
+                f"{WAHA_API_URL}/api/sendPoll",
+                headers=_waha_headers(),
+                json={
+                    "session": WAHA_SESSION,
                     "chatId": req.chatId,
                     "poll": req.poll.model_dump(),
-                    "votes": [],
-                    "sentAt": datetime.now(timezone.utc).isoformat(),
-                }
-                _save_results(results)
+                },
+            )
+            body = resp.text
+            if resp.status_code >= 400:
+                raise HTTPException(status_code=resp.status_code, detail=body)
 
-        return {
-            "status": "sent",
-            "messageId": message_id,
-            "waResponse": result,
-        }
+            result = resp.json()
+            mid = result.get("id") or result.get("key", {})
+            message_id = mid.get("_serialized") if isinstance(mid, dict) else str(mid) if mid else None
+
+            if message_id:
+                with _results_lock:
+                    results = _load_results()
+                    results[message_id] = {
+                        "chatId": req.chatId,
+                        "poll": req.poll.model_dump(),
+                        "votes": [],
+                        "sentAt": datetime.now(timezone.utc).isoformat(),
+                    }
+                    _save_results(results)
+
+            return {
+                "status": "sent",
+                "messageId": message_id,
+                "waResponse": result,
+            }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/webhook")
@@ -176,6 +183,10 @@ async def webhook(request: Request) -> dict:
         with _results_lock:
             results = _load_results()
             if message_id in results:
+                results[message_id]["votes"] = [
+                    v for v in results[message_id]["votes"]
+                    if v["voter"] != voter
+                ]
                 vote_entry = {
                     "voter": voter,
                     "options": selected,
@@ -207,6 +218,38 @@ def health() -> dict:
     return {"status": "ok"}
 
 
+@app.get("/sessions")
+def list_sessions() -> dict:
+    """Debug: list WAHA sessions to verify session name"""
+    try:
+        with httpx.Client(timeout=10) as client:
+            resp = client.get(
+                f"{WAHA_API_URL}/api/sessions",
+                headers=_waha_headers(),
+            )
+            resp.raise_for_status()
+            return {"sessions": resp.json()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.post("/test/book")
+def test_book(data: dict) -> dict:
+    """Debug: trigger padelBooking with a date_pattern and slot_idx"""
+    date_pattern = data.get("date_pattern", "Thursday, July 10")
+    slot_idx = data.get("slot_idx", PADEL_SLOT_IDX)
+    try:
+        with httpx.Client(timeout=30) as client:
+            resp = client.post(
+                "http://padel-booking.waha.svc.cluster.local:9080/book",
+                json={"date_pattern": date_pattern, "slot_idx": slot_idx},
+            )
+            resp.raise_for_status()
+            return resp.json()
+    except Exception as e:
+        return {"error": str(e)}
+
+
 # ── Restate workflow (mounted on /restate/v1) ──────────────────────────────
 
 workflow = restate.Workflow("pollScheduler")
@@ -219,6 +262,7 @@ def _send_poll_to_waha() -> str:
             f"{WAHA_API_URL}/api/sendPoll",
             headers=_waha_headers(),
             json={
+                "session": WAHA_SESSION,
                 "chatId": POLL_CHAT_ID,
                 "poll": {
                     "name": POLL_NAME,

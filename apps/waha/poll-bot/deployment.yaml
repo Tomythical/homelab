@@ -42,6 +42,8 @@ spec:
           env:
             - name: WAHA_API_URL
               value: "http://waha.waha.svc.cluster.local:3000"
+            - name: WAHA_SESSION
+              value: "default"
             - name: POLL_BOT_WEBHOOK_URL
               value: "http://poll-bot.waha.svc.cluster.local/webhook"
             - name: RESULTS_FILE
