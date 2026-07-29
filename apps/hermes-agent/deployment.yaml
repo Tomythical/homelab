@@ -26,11 +26,13 @@ spec:
         image: busybox
         securityContext:
           runAsUser: 0
+          runAsGroup: 0
         command:
         - sh
         - -c
         - |
           chown -R 10000:10000 /opt/data
+          chmod 755 /opt/data
           if [ ! -f /opt/data/config.yaml ]; then
             cp /tmp-config/config.yaml /opt/data/config.yaml
             chown 10000:10000 /opt/data/config.yaml
