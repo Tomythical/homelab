@@ -24,7 +24,6 @@
         "digest"
       ],
       "automerge": true,
-      "platformAutomerge": true,
       "automergeType": "pr"
     },
     {
