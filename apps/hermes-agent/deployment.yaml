@@ -162,6 +162,8 @@ spec:
           value: "/opt/data"
         - name: HERMES_CONFIG_PATH
           value: "/opt/data/config.yaml"
+        - name: HERMES_WEBUI_AGENT_DIR
+          value: "/opt/hermes"
         - name: HERMES_WEBUI_HOST
           value: "0.0.0.0"
         - name: HERMES_WEBUI_PORT
