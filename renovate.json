@@ -24,7 +24,8 @@
         "digest"
       ],
       "automerge": true,
-      "platformAutomerge": true
+      "platformAutomerge": true,
+      "automergeType": "pr"
     },
     {
       "matchUpdateTypes": [
