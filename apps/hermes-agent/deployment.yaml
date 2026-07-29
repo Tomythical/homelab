@@ -46,6 +46,20 @@ spec:
           mountPath: /tmp-config
         - name: container-hints
           mountPath: /shared
+      - name: copy-agent-source
+        image: nousresearch/hermes-agent:v2026.7.20
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        command:
+        - sh
+        - -c
+        - |
+          cp -a /opt/hermes/. /agent-source/
+          chown -R 10000:10000 /agent-source
+        volumeMounts:
+        - name: agent-source
+          mountPath: /agent-source
       containers:
       - name: gateway
         image: nousresearch/hermes-agent:v2026.7.20
@@ -135,6 +149,68 @@ spec:
         - name: container-hints
           mountPath: /run/.containerenv
           subPath: .containerenv
+      - name: webui
+        image: ghcr.io/nesquena/hermes-webui:0.51.85
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        envFrom:
+        - secretRef:
+            name: hermes-secrets
+        env:
+        - name: HERMES_HOME
+          value: "/opt/data"
+        - name: HERMES_CONFIG_PATH
+          value: "/opt/data/config.yaml"
+        - name: HERMES_WEBUI_HOST
+          value: "0.0.0.0"
+        - name: HERMES_WEBUI_PORT
+          value: "8787"
+        - name: HERMES_WEBUI_STATE_DIR
+          value: "/opt/data/webui"
+        - name: HERMES_WEBUI_DEFAULT_WORKSPACE
+          value: "/opt/data/home"
+        - name: HERMES_WEBUI_SECURE
+          value: "1"
+        - name: HERMES_SKIP_CHMOD
+          value: "1"
+        - name: WANTED_UID
+          value: "10000"
+        - name: WANTED_GID
+          value: "10000"
+        ports:
+        - containerPort: 8787
+          name: webui
+          protocol: TCP
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8787
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 90
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8787
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8787
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: "1"
+            memory: 2Gi
+        volumeMounts:
+        - name: hermes-data
+          mountPath: /opt/data
+        - name: agent-source
+          mountPath: /opt/hermes
       volumes:
       - name: hermes-data
         persistentVolumeClaim:
@@ -143,4 +219,6 @@ spec:
         configMap:
           name: hermes-config
       - name: container-hints
+        emptyDir: {}
+      - name: agent-source
         emptyDir: {}

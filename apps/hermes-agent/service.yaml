@@ -8,5 +8,9 @@ spec:
     targetPort: 9119
     protocol: TCP
     name: dashboard
+  - port: 8787
+    targetPort: 8787
+    protocol: TCP
+    name: webui
   selector:
     app: hermes-agent
