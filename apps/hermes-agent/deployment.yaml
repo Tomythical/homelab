@@ -150,7 +150,7 @@ spec:
           mountPath: /run/.containerenv
           subPath: .containerenv
       - name: webui
-        image: ghcr.io/nesquena/hermes-webui:0.51.85
+        image: ghcr.io/nesquena/hermes-webui:0.52.166
         securityContext:
           runAsUser: 0
           runAsGroup: 0
