@@ -28,7 +28,7 @@ spec:
           subPath: app
       containers:
       - name: celery-beat
-        image: swalabtech/journiv-app:0.1.0-beta.21
+        image: swalabtech/journiv-app:0.1.0-beta.24
         env:
         - name: SECRET_KEY
           valueFrom:
