@@ -14,6 +14,8 @@ spec:
       app: hermes-agent
   template:
     metadata:
+      annotations:
+        hermes-agent.nousresearch.com/github-token-secret-version: "2"
       labels:
         app: hermes-agent
     spec:
