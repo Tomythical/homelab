@@ -40,7 +40,7 @@ spec:
               mountPath: /config
       containers:
         - name: tailscale-sidecar
-          image: ghcr.io/tailscale/tailscale:v1.98.10
+          image: ghcr.io/tailscale/tailscale:v1.102.2
           env:
             - name: TS_HOSTNAME
               value: jellyfin-direct
