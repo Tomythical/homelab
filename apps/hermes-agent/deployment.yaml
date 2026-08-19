@@ -157,6 +157,8 @@ spec:
         envFrom:
         - secretRef:
             name: hermes-secrets
+        - secretRef:
+            name: hermes-github
         env:
         - name: HERMES_HOME
           value: "/opt/data"

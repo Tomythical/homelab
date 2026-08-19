@@ -5,6 +5,7 @@ resources:
   - pvc.yaml
   - config.yaml
   - external-secret.yaml
+  - github-external-secret.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
