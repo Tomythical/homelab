@@ -8,6 +8,8 @@
     ":prConcurrentLimitNone"
   ],
   "hostRules": [],
+  "platformAutomerge": true,
+  "automergeStrategy": "rebase",
   "packageRules": [
     {
       "matchUpdateTypes": [
