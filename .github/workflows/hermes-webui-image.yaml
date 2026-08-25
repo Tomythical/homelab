@@ -35,6 +35,6 @@ jobs:
         with:
           context: apps/hermes-agent
           push: true
-          tags: ghcr.io/tomythical/hermes-webui-playwright:0.52.166-playwright.1
+          tags: ghcr.io/tomythical/hermes-webui-playwright:0.52.166-playwright.2
           cache-from: type=gha
           cache-to: type=gha,mode=max

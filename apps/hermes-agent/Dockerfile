@@ -6,8 +6,13 @@ LABEL org.opencontainers.image.source="https://github.com/Tomythical/homelab"
 
 USER root
 
+ARG KUBECTL_VERSION=v1.34.0
+ARG KUBECTL_SHA256=cfda68cba5848bc3b6c6135ae2f20ba2c78de20059f68789c090166d6abc3e2c
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
         libasound2t64 \
         libatk-bridge2.0-0t64 \
         libatk1.0-0t64 \
@@ -31,6 +36,9 @@ RUN apt-get update \
         libxrandr2 \
         fonts-liberation \
         fonts-noto-color-emoji \
+    && curl -fsSLo /usr/local/bin/kubectl "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/amd64/kubectl" \
+    && echo "${KUBECTL_SHA256}  /usr/local/bin/kubectl" | sha256sum -c - \
+    && chmod 0755 /usr/local/bin/kubectl \
     && rm -rf /var/lib/apt/lists/*
 
 # Preserve the upstream root entrypoint; it drops privileges before starting WebUI.

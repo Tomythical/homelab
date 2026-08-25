@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: hermes-agent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: hermes-agent-pod-reader
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+      - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: hermes-agent-pod-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: hermes-agent-pod-reader
+subjects:
+  - kind: ServiceAccount
+    name: hermes-agent
+    namespace: hermes-agent
