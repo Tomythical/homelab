@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: homepage
 data:
   settings.yaml: |
-    title: Homepage
+    title: Homelab
     language: en
     theme: dark
     color: zinc
@@ -18,114 +18,56 @@ data:
     disableCollapse: true
 
     # Site Assets
-    base: https://homepage.tail537360.ts.net
+    base: https://homepage.ratfish-company.ts.net
     background:
       image: https://unsplash.com/photos/mountain-dew-during-sunrise-xJ2tjuUHD9M
       blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
 
     # Layout Configuration
     layout:
-      # HOME Tab Items
-      Files Management:
-          style: column
+      Start:
+          style: row
+          columns: 4
           tab: HOME
-          icon: mdi-file-multiple
-      Media Processing:
-          style: column
+          icon: mdi-view-dashboard
+      Media:
+          style: row
+          columns: 4
           tab: HOME
           icon: mdi-multimedia
-      Media Management:
-          style: column
-          tab: HOME
-          icon: mdi-expansion-card
-      System Monitoring:
-          style: column
-          tab: HOME
-          icon: mdi-server
-      Cloud Services:
-          style: column
-          tab: HOME
-          icon: mdi-google-cloud
-      Sharing Platforms:
-          style: column
-          tab: HOME
-          icon: mdi-share-all
-      Tools Collection:
-          style: column
-          tab: HOME
-          icon: mdi-tools
-      Discord Bots:
-          style: column
-          tab: HOME
+      Downloads:
+          style: row
+          columns: 4
+          tab: MEDIA
+          icon: mdi-download
+      Automation:
+          style: row
+          columns: 4
+          tab: APPS
           icon: mdi-robot
-      Game Servers:
-          style: column
-          tab: HOME
-          icon: mdi-gamepad-variant
-      _hidden0:
-          style: column
-          tab: HOME
-      _hidden1:
-          style: column
-          tab: HOME
-      # STAT Tab Items
-      Document Directories:
-          style: column
-          tab: STAT
-          icon: mdi-file-document-outline
-      Camera Galleries:
-          style: column
-          tab: STAT
-          icon: mdi-camera-outline
-      Music Libraries:
-          style: column
-          tab: STAT
-          icon: mdi-music-box-outline
-      Movies Library:
-          style: column
-          tab: STAT
-          icon: mdi-movie-roll
-      Series Library:
-          style: column
-          tab: STAT
-          icon: mdi-television-classic
-      Clips Library:
-          style: column
-          tab: STAT
-          icon: mdi-movie-outline
-      Watch Time:
-          style: column
-          tab: STAT
-          icon: mdi-account-group-outline
-      Popular Clients:
-          style: column
-          tab: STAT
-          icon: mdi-cellphone-link
-      Release Calendar:
-          style: column
-          tab: STAT
-          icon: mdi-calendar
-      # DEPS Tab Items
-      Databases:
-          style: column
-          tab: DEPS
-          icon: mdi-database
-      ⠀:
-          style: column
-          tab: DEPS
-      ⠀⠀:
-          style: column
-          tab: DEPS
-      ⠀⠀⠀:
-          style: column
-          tab: DEPS
-      ⠀⠀⠀⠀:
-          style: column
-          tab: DEPS
-      ⠀⠀⠀⠀⠀:
-          style: column
-          tab: DEPS
+      Messaging:
+          style: row
+          columns: 3
+          tab: APPS
+          icon: mdi-message-processing
+      Observability:
+          style: row
+          columns: 4
+          tab: OPS
+          icon: mdi-monitor-dashboard
+      Identity:
+          style: row
+          columns: 2
+          tab: OPS
+          icon: mdi-account-lock
+      Internal:
+          style: row
+          columns: 4
+          tab: OPS
+          icon: mdi-kubernetes
+          initiallyCollapsed: true
       Homepage Configuration:
-          style: column
-          tab: DEPS
+          style: row
+          columns: 2
+          tab: OPS
           icon: mdi-home

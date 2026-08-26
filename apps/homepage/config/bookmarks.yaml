@@ -7,34 +7,22 @@ metadata:
     app.kubernetes.io/name: homepage
 data:
   bookmarks.yaml: |
-    - _hidden0:
-        - Dashboard:
-          - icon: /icons/services/unraid.png
-            href: http://example.local:8090/Dashboard
-            description: ⠀
+    - GitOps:
+        - Repository:
+          - icon: github.png
+            href: https://github.com/tomythical/homelab
+            description: Homelab manifests
+        - Flux Docs:
+          - icon: flux.png
+            href: https://fluxcd.io/flux/
+            description: GitOps operator docs
 
-        - Docker:
-          - icon: sh-docker
-            href: http://example.local:8090/Docker
-            description: ⠀
-
-        - Navigator:
-          - icon: files.png
-            href: http://example.local:8090/Settings/Browse?dir=/mnt
-            description: ⠀
-          
-        - Scripts:
-          - icon: /icons/services/scripts.png
-            href: http://example.local:8090/Settings/Userscripts
-            description: ⠀
-
-    - _hidden1:
-        - Cloudflare:
-          - icon: cloudflare.png
-            href: https://dash.cloudflare.com/[REDACTED-ZONE-ID]/example.com/dns/records
-            description: ⠀
-
-        - Flareddns:
-          - icon: /icons/services/flareddns.png
-            href: http://example.local:8090/Docker/UpdateContainer?xmlTemplate=edit:/path/to/config/template.xml
-            description: ⠀
+    - Operations:
+        - Tailscale Admin:
+          - icon: tailscale.png
+            href: https://login.tailscale.com/admin/machines
+            description: Tailnet machines
+        - Homepage Docs:
+          - icon: homepage.png
+            href: https://gethomepage.dev/
+            description: Dashboard docs
