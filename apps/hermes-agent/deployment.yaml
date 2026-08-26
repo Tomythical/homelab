@@ -51,7 +51,7 @@ spec:
         - name: container-hints
           mountPath: /shared
       - name: copy-agent-source
-        image: nousresearch/hermes-agent:v2026.8.18
+        image: nousresearch/hermes-agent:v2026.8.19
         securityContext:
           runAsUser: 0
           runAsGroup: 0
@@ -66,7 +66,7 @@ spec:
           mountPath: /agent-source
       containers:
       - name: gateway
-        image: nousresearch/hermes-agent:v2026.8.18
+        image: nousresearch/hermes-agent:v2026.8.19
         args:
         - gateway
         - run
@@ -109,7 +109,7 @@ spec:
           mountPath: /run/.containerenv
           subPath: .containerenv
       - name: dashboard
-        image: nousresearch/hermes-agent:v2026.8.18
+        image: nousresearch/hermes-agent:v2026.8.19
         args:
         - dashboard
         - --host
