@@ -10,9 +10,9 @@ data:
     title: Homelab
     language: en
     theme: dark
-    color: zinc
+    color: slate
     target: _self
-    headerStyle: boxed
+    headerStyle: boxedWidgets
     statusStyle: "dot"
     hideVersion: true
     disableCollapse: true
@@ -20,8 +20,11 @@ data:
     # Site Assets
     base: https://homepage.ratfish-company.ts.net
     background:
-      image: https://unsplash.com/photos/mountain-dew-during-sunrise-xJ2tjuUHD9M
-      blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
+      image: https://images.unsplash.com/photo-1502790671504-542ad42d5189?auto=format&fit=crop&w=2560&q=80
+      blur: sm
+      saturate: 50
+      brightness: 50
+      opacity: 30
 
     # Layout Configuration
     layout:
