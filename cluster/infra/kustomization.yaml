@@ -5,7 +5,6 @@ resources:
   - ../../infra/metal-lb/
   - ../../infra/tailscale/
   - ../../infra/local-path-provisioner/
-  - ../../infra/external-secrets/
   - ../../infra/kube-prometheus/
   # - ../../infra/kagent/
   - ../../infra/metrics-server/

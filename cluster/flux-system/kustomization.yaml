@@ -8,3 +8,4 @@ resources:
 - apps.yaml
 - infra.yaml
 - external-secrets.yaml
+- automation.yaml
