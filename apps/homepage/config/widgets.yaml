@@ -12,20 +12,24 @@ data:
 
     - greeting:
         text_size: 4xl
-        text: Homelab
+        text: Homepage 
 
     - resources:
         expanded: false
-        cpu: true
-        memory: true
+        cpu: true 
+        cputemp: true
+        memory: true  
         disk: /media
         refresh: 1000
 
-    - kubernetes:
-        cluster: true
-        nodes: true
-        pods: true
-        refresh: 5000
+    - greeting:
+        text_size: 4xl
+        text: —
+
+    - resources: 
+        expanded: false
+        uptime: true 
+        refresh: 1000
 
     - datetime:
         text_size: 4xl
@@ -40,7 +44,7 @@ data:
             hour12: false
 
     - search:
-        provider: google
+        provider: google 
         focus: true
         showSearchSuggestions: true
         target: _parent
