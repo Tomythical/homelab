@@ -12,6 +12,23 @@ rules:
       - ""
     resources:
       - pods
+      - namespaces
+      - events
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - pods/log
+    verbs:
+      - get
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - replicasets
+      - statefulsets
     verbs:
       - get
       - list
