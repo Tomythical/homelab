@@ -1,0 +1,82 @@
+name: Synchronize Flux Components
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - "cluster/flux-system/flux-version"
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  sync-components:
+    # pull_request_target has a write-capable token. Restrict execution to a
+    # Renovate branch in this repository and never run code from that branch.
+    if: >-
+      github.actor == 'renovate[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'renovate/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted base revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Read and validate proposed Flux version
+        id: flux
+        shell: bash
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          version="$(git show "${HEAD_SHA}:cluster/flux-system/flux-version" | python -c '
+          import re
+          import sys
+
+          lines = sys.stdin.read().splitlines()
+          if len(lines) != 2 or not re.fullmatch(r"v\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?", lines[1]):
+              raise SystemExit("invalid Flux release tag")
+          print(lines[1])
+          ')"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate verified components from trusted synchronizer
+        shell: bash
+        env:
+          VERSION: ${{ steps.flux.outputs.version }}
+        run: |
+          set -euo pipefail
+          scripts/sync-flux-components.sh "$VERSION" "$RUNNER_TEMP/gotk-components.yaml"
+
+      - name: Commit only the generated component bundle to Renovate's branch
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          VERSION: ${{ steps.flux.outputs.version }}
+          GENERATED_COMPONENTS: ${{ runner.temp }}/gotk-components.yaml
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$HEAD_SHA"
+          git checkout --detach FETCH_HEAD
+          cp "$GENERATED_COMPONENTS" cluster/flux-system/gotk-components.yaml
+          if git diff --quiet -- cluster/flux-system/gotk-components.yaml; then
+            echo "Flux component bundle is already aligned with ${VERSION}."
+            exit 0
+          fi
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add cluster/flux-system/gotk-components.yaml
+          git commit -m "chore(flux): sync components for ${VERSION}"
+          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:${HEAD_REF}"

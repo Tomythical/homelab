@@ -62,5 +62,17 @@
     "managerFilePatterns": [
       "/apps/.*/Dockerfile$/"
     ]
-  }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update the Flux release marker that regenerates the bootstrap bundle",
+      "managerFilePatterns": [
+        "/^cluster/flux-system/flux-version$/"
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>github-releases) depName=(?<depName>fluxcd/flux2) versioning=(?<versioning>semver)\\s*\\n(?<currentValue>v\\d+\\.\\d+\\.\\d+(?:[-+][0-9A-Za-z.-]+)?)"
+      ]
+    }
+  ]
 }
