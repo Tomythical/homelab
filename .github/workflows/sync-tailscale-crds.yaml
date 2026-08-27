@@ -1,0 +1,91 @@
+name: Synchronize Tailscale CRDs
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    paths:
+      - "infra/tailscale/tailscale.yaml"
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  sync-crds:
+    # pull_request_target has a write-capable token. Restrict it to Renovate
+    # branches in this repository, and never run code checked out from that PR.
+    if: >-
+      github.actor == 'renovate[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'renovate/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted base revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+
+      - name: Read and validate proposed Tailscale version
+        id: tailscale
+        shell: bash
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          proposed_release="$(git show "${HEAD_SHA}:infra/tailscale/tailscale.yaml")"
+          version="$(printf '%s' "$proposed_release" | python -c '
+          import re
+          import sys
+          import yaml
+
+          release = yaml.safe_load(sys.stdin)
+          version = release["spec"]["values"]["operatorConfig"]["image"]["tag"]
+          if not isinstance(version, str) or not re.fullmatch(r"v\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?", version):
+              raise SystemExit("invalid Tailscale release tag")
+          print(version)
+          ')
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate CRD bundle from the trusted synchronizer
+        shell: bash
+        env:
+          VERSION: ${{ steps.tailscale.outputs.version }}
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check PyYAML
+          python scripts/sync-tailscale-crds.py "$VERSION" --output "$RUNNER_TEMP/tailscale.yaml"
+
+      - name: Commit only the generated CRD bundle to Renovate's branch
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          VERSION: ${{ steps.tailscale.outputs.version }}
+          GENERATED_CRDS: ${{ runner.temp }}/tailscale.yaml
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$HEAD_SHA"
+          git checkout --detach FETCH_HEAD
+          cp "$GENERATED_CRDS" infra/crds/tailscale/tailscale.yaml
+          if git diff --quiet -- infra/crds/tailscale/tailscale.yaml; then
+            echo "CRD bundle is already aligned with ${VERSION}."
+            exit 0
+          fi
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add infra/crds/tailscale/tailscale.yaml
+          git commit -m "chore(tailscale): sync CRDs for ${VERSION}"
+          git push "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "HEAD:${HEAD_REF}"

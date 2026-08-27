@@ -32,6 +32,18 @@
       "matchPackageNames": [
         "*"
       ]
+    },
+    {
+      "matchFileNames": [
+        "infra/tailscale/tailscale.yaml"
+      ],
+      "matchPackageNames": [
+        "tailscale/k8s-operator"
+      ],
+      "groupName": "tailscale operator and CRDs",
+      "addLabels": [
+        "generated-crds"
+      ]
     }
   ],
   "kubernetes": {
