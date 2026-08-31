@@ -1,2 +1,2 @@
 # renovate: datasource=github-releases depName=fluxcd/flux2 versioning=semver
-v2.9.4
+v2.9.5
