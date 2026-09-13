@@ -38,7 +38,7 @@ spec:
             - name: mediaserver-volume
               mountPath: /data
         - name: config-radarr
-          image: docker.io/ubuntu:24.04
+          image: docker.io/ubuntu:26.04
           command: [/init-radarr/init-radarr.sh]
           volumeMounts:
             - mountPath: /init-radarr
