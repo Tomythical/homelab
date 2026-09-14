@@ -45,7 +45,7 @@ spec:
               mountPath: /.gunicorn
       containers:
         - name: wizarr
-          image: ghcr.io/wizarrrr/wizarr:v2026.9.0
+          image: ghcr.io/wizarrrr/wizarr:v2026.9.1
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
