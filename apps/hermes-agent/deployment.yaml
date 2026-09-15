@@ -76,74 +76,42 @@ spec:
         env:
         - name: HERMES_HOME
           value: "/opt/data"
-        livenessProbe:
-          exec:
-            command:
-            - pgrep
-            - -f
-            - gateway
-          initialDelaySeconds: 60
-          periodSeconds: 30
-        readinessProbe:
-          exec:
-            command:
-            - pgrep
-            - -f
-            - gateway
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        resources:
-          requests:
-            cpu: 250m
-            memory: 512Mi
-          limits:
-            cpu: "1"
-            memory: 2Gi
-        volumeMounts:
-        - name: hermes-data
-          mountPath: /opt/data
-        - name: container-hints
-          mountPath: /.dockerenv
-          subPath: .dockerenv
-        - name: container-hints
-          mountPath: /run/.containerenv
-          subPath: .containerenv
-      - name: dashboard
-        image: nousresearch/hermes-agent:v2026.9.14
-        args:
-        - dashboard
-        - --host
-        - "0.0.0.0"
-        - --no-open
-        envFrom:
-        - secretRef:
-            name: hermes-secrets
-        env:
-        - name: HERMES_HOME
-          value: "/opt/data"
+        - name: GATEWAY_MULTIPLEX_PROFILES
+          value: "true"
+        - name: HERMES_DASHBOARD
+          value: "1"
         ports:
         - containerPort: 9119
           name: dashboard
           protocol: TCP
+        startupProbe:
+          httpGet:
+            path: /api/health
+            port: dashboard
+          failureThreshold: 30
+          periodSeconds: 5
+          timeoutSeconds: 2
         livenessProbe:
           httpGet:
-            path: /
-            port: 9119
-          initialDelaySeconds: 30
+            path: /api/health
+            port: dashboard
+          failureThreshold: 3
           periodSeconds: 30
+          timeoutSeconds: 2
         readinessProbe:
           httpGet:
-            path: /
-            port: 9119
-          initialDelaySeconds: 10
+            path: /api/health
+            port: dashboard
+          failureThreshold: 3
           periodSeconds: 10
+          timeoutSeconds: 2
         resources:
           requests:
-            cpu: 100m
-            memory: 256Mi
+            cpu: 350m
+            memory: 768Mi
           limits:
-            cpu: 500m
-            memory: 1Gi
+            cpu: 1500m
+            memory: 3Gi
         volumeMounts:
         - name: hermes-data
           mountPath: /opt/data
