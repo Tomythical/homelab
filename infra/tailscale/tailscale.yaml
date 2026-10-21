@@ -19,7 +19,7 @@ spec:
         - "tag:k8s-operator"
       image:
         repository: tailscale/k8s-operator
-        tag: "v1.104.1"
+        tag: "v1.104.2"
       logging: "debug" # info, debug, dev
     apiServerProxyConfig:
       allowImpersonation: "true"
