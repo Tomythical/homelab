@@ -107,7 +107,7 @@ spec:
           timeoutSeconds: 2
         resources:
           requests:
-            cpu: 350m
+            cpu: 150m
             memory: 768Mi
           limits:
             cpu: 1500m
@@ -177,7 +177,7 @@ spec:
           periodSeconds: 10
         resources:
           requests:
-            cpu: 250m
+            cpu: 50m
             memory: 512Mi
           limits:
             cpu: "1"
