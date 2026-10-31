@@ -26,7 +26,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       initContainers:
         - name: init-media-dirs
-          image: docker.io/library/busybox:1.37.0
+          image: docker.io/library/busybox:1.38.0
           command: ["sh", "-c", "mkdir -p /data/media/audiobooks"]
           securityContext:
             allowPrivilegeEscalation: false
