@@ -1,0 +1,15 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: listenarr
+spec:
+  ingressClassName: tailscale
+  defaultBackend:
+    service:
+      name: listenarr
+      port:
+        number: 4545
+  tls:
+    - hosts:
+        - listenarr
