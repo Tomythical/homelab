@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: media-server
 resources:
   - pvc.yaml
+  - audiobookshelf/
   - seerr/
   - jellyfin/
   - listenarr/

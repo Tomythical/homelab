@@ -4,7 +4,9 @@ resources:
   - ../../apps/podinfo/
   - ../../apps/media-server/
   - ../../apps/n8n/
-  - ../../apps/journiv/
+  # - ../../apps/journiv/
+  # Preserve application data while Journiv is disabled.
+  - ../../apps/journiv/pvc.yaml
   - ../../apps/homepage/
   - ../../apps/waha/
   - ../../apps/hermes-agent/
