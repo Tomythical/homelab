@@ -16,9 +16,10 @@ After the changes are pushed and Flux reconciles:
    existing Kingdom of Ash download, which was associated with Throne of Glass
    in Listenarr, before trusting its imported folder and filename.
 
-Only `media/audiobooks` from the existing `mediaserver-rwo-pvc` is mounted,
-read-only, at the same path used by Listenarr. This lets Audiobookshelf index
-and stream the books without modifying them or exposing the download folders.
+The existing `mediaserver-rwo-pvc` is mounted read-only at `/data`, matching
+Listenarr's mount layout. Point the library only at `/data/media/audiobooks`,
+not the download folders. Audiobookshelf can index and stream books without
+modifying the shared media volume.
 Do not enable uploads, source-file tagging, deletion, or podcast downloads;
 these require writable media storage and are outside this deployment's scope.
 
