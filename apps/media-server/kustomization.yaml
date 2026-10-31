@@ -5,6 +5,7 @@ resources:
   - pvc.yaml
   - seerr/
   - jellyfin/
+  - listenarr/
   - prowlarr/
   - radarr/
   - sabnzbd/
