@@ -52,6 +52,13 @@ data:
             namespace: media-server
             podSelector: app.kubernetes.io/instance=seerr,app.kubernetes.io/name=seerr-chart
             siteMonitor: http://seerr.media-server.svc.cluster.local
+        - SuggestArr:
+            icon: mdi-movie-search
+            href: https://suggestarr.ratfish-company.ts.net
+            description: Automated media recommendations
+            namespace: media-server
+            podSelector: app=suggestarr
+            siteMonitor: http://suggestarr.media-server.svc.cluster.local:5000/api/health/live
         - StreamyStats:
             icon: mdi-chart-line
             href: https://streamystats.ratfish-company.ts.net
