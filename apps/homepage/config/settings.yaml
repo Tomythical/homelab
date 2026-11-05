@@ -1,73 +1,63 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: settings
-  namespace: media-server
-  labels:
-    app.kubernetes.io/name: homepage
-data:
-  settings.yaml: |
-    title: Homelab
-    language: en
-    theme: dark
-    color: zinc
-    target: _self
-    headerStyle: boxed
-    statusStyle: "dot"
-    hideVersion: true
-    disableCollapse: true
-
-    # Site Assets
-    base: https://homepage.ratfish-company.ts.net
-    background:
-      image: https://unsplash.com/photos/mountain-dew-during-sunrise-xJ2tjuUHD9M
-      blur: sm # sm, "", md, xl... see https://tailwindcss.com/docs/backdrop-blur
-
-    # Layout Configuration
-    layout:
-      Start:
-          style: row
-          columns: 4
-          tab: HOME
-          icon: mdi-view-dashboard
-      Media:
-          style: row
-          columns: 4
-          tab: HOME
-          icon: mdi-multimedia
-      Downloads:
-          style: row
-          columns: 4
-          tab: MEDIA
-          icon: mdi-download
-      Automation:
-          style: row
-          columns: 4
-          tab: APPS
-          icon: mdi-robot
-      Messaging:
-          style: row
-          columns: 3
-          tab: APPS
-          icon: mdi-message-processing
-      Observability:
-          style: row
-          columns: 4
-          tab: OPS
-          icon: mdi-monitor-dashboard
-      Identity:
-          style: row
-          columns: 2
-          tab: OPS
-          icon: mdi-account-lock
-      Internal:
-          style: row
-          columns: 4
-          tab: OPS
-          icon: mdi-kubernetes
-          initiallyCollapsed: true
-      Homepage Configuration:
-          style: row
-          columns: 2
-          tab: OPS
-          icon: mdi-home
+title: "Homelab"
+description: "Media, apps, and cluster operations"
+language: "en-GB"
+theme: "dark"
+color: "slate"
+target: "_self"
+headerStyle: "clean"
+statusStyle: "dot"
+hideVersion: true
+disableCollapse: true
+useEqualHeights: true
+base: "https://homepage.ratfish-company.ts.net"
+background:
+  image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2560&q=80"
+  brightness: 50
+  saturate: 50
+  opacity: 20
+quicklaunch:
+  searchDescriptions: true
+  showSearchSuggestions: false
+  mobileButtonPosition: "bottom-right"
+layout:
+  Start:
+    style: "row"
+    columns: 4
+    tab: "HOME"
+    icon: "mdi-view-dashboard"
+  Media:
+    style: "row"
+    columns: 4
+    tab: "MEDIA"
+    icon: "mdi-multimedia"
+  Downloads:
+    style: "row"
+    columns: 4
+    tab: "MEDIA"
+    icon: "mdi-download"
+  Automation:
+    style: "row"
+    columns: 3
+    tab: "APPS"
+    icon: "mdi-robot"
+  Messaging:
+    style: "row"
+    columns: 2
+    tab: "APPS"
+    icon: "mdi-message-processing"
+  Observability:
+    style: "row"
+    columns: 3
+    tab: "OPS"
+    icon: "mdi-monitor-dashboard"
+  Internal:
+    style: "row"
+    columns: 2
+    tab: "OPS"
+    icon: "mdi-api"
+  GitOps:
+    tab: "OPS"
+    icon: "mdi-source-repository"
+  Operations:
+    tab: "OPS"
+    icon: "mdi-book-open-variant"

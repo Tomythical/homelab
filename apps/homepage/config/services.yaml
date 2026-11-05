@@ -1,222 +1,187 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: services
-  namespace: media-server
-  labels:
-    app.kubernetes.io/name: homepage
-data:
-  services.yaml: |
-    - Start:
-        - Homepage:
-            icon: homepage.png
-            href: https://homepage.ratfish-company.ts.net
-            description: Homelab dashboard
-            namespace: media-server
-            podSelector: app.kubernetes.io/name=homepage
-            siteMonitor: http://homepage.media-server.svc.cluster.local:3000/api/healthcheck
-        - Grafana:
-            icon: grafana.png
-            href: https://grafana.ratfish-company.ts.net
-            description: Metrics dashboards
-            namespace: monitoring
-            podSelector: app.kubernetes.io/name=grafana
-            siteMonitor: http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local
-        - Jellyfin:
-            icon: jellyfin.png
-            href: https://jellyfin.ratfish-company.ts.net
-            description: Media streaming library
-            namespace: media-server
-            podSelector: app=jellyfin
-            siteMonitor: http://jellyfin.media-server.svc.cluster.local:8096/health
-        - n8n:
-            icon: n8n.png
-            href: https://n8n.ratfish-company.ts.net
-            description: Workflow automation
-            namespace: n8n
-            podSelector: app.kubernetes.io/instance=n8n,app.kubernetes.io/component=main
-            siteMonitor: http://n8n.n8n.svc.cluster.local:5678/healthz
+- Start:
+    - Homepage:
+        icon: "homepage.png"
+        href: "https://homepage.ratfish-company.ts.net"
+        description: "Homelab dashboard"
+        namespace: "media-server"
+        podSelector: "app.kubernetes.io/name=homepage"
+        siteMonitor: "http://homepage.media-server.svc.cluster.local:3000/api/healthcheck"
+    - Grafana:
+        icon: "grafana.png"
+        href: "https://grafana.ratfish-company.ts.net"
+        description: "Metrics dashboards"
+        namespace: "monitoring"
+        podSelector: "app.kubernetes.io/name=grafana"
+        siteMonitor: "http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local"
+    - Jellyfin:
+        icon: "jellyfin.png"
+        href: "https://jellyfin.ratfish-company.ts.net"
+        description: "Media streaming library"
+        namespace: "media-server"
+        podSelector: "app=jellyfin"
+        siteMonitor: "http://jellyfin.media-server.svc.cluster.local:8096/health"
+    - n8n:
+        icon: "n8n.png"
+        href: "https://n8n.ratfish-company.ts.net"
+        description: "Workflow automation"
+        namespace: "n8n"
+        podSelector: "app.kubernetes.io/instance=n8n,app.kubernetes.io/component=main"
+        siteMonitor: "http://n8n.n8n.svc.cluster.local:5678/healthz"
 
-    - Media:
-        - Jellyfin:
-            icon: jellyfin.png
-            href: https://jellyfin.ratfish-company.ts.net
-            description: Watch movies, shows, and music
-            namespace: media-server
-            podSelector: app=jellyfin
-            siteMonitor: http://jellyfin.media-server.svc.cluster.local:8096/health
-        - Seerr:
-            icon: jellyseerr.png
-            href: https://seerr.ratfish-company.ts.net
-            description: Request new media
-            namespace: media-server
-            podSelector: app.kubernetes.io/instance=seerr,app.kubernetes.io/name=seerr-chart
-            siteMonitor: http://seerr.media-server.svc.cluster.local
-        - SuggestArr:
-            icon: mdi-movie-search
-            href: https://suggestarr.ratfish-company.ts.net
-            description: Automated media recommendations
-            namespace: media-server
-            podSelector: app=suggestarr
-            siteMonitor: http://suggestarr.media-server.svc.cluster.local:5000/api/health/live
-        - StreamyStats:
-            icon: mdi-chart-line
-            href: https://streamystats.ratfish-company.ts.net
-            description: Jellyfin viewing statistics
-            namespace: media-server
-            podSelector: app=streamystats-nextjs
-            siteMonitor: http://streamystats.media-server.svc.cluster.local:3000
-        - Wizarr:
-            icon: mdi-account-multiple-plus
-            href: https://wizarr.ratfish-company.ts.net
-            description: Media user invitations
-            namespace: media-server
-            podSelector: app=wizarr
-            siteMonitor: http://wizarr.media-server.svc.cluster.local:5690
-        - Pinchflat:
-            icon: mdi-youtube
-            href: https://pinchflat.ratfish-company.ts.net
-            description: YouTube media archiving
-            namespace: media-server
-            podSelector: app=pinchflat
-            siteMonitor: http://pinchflat.media-server.svc.cluster.local
+- Media:
+    - Jellyfin:
+        icon: "jellyfin.png"
+        href: "https://jellyfin.ratfish-company.ts.net"
+        description: "Watch movies, shows, and music"
+        namespace: "media-server"
+        podSelector: "app=jellyfin"
+        siteMonitor: "http://jellyfin.media-server.svc.cluster.local:8096/health"
+    - Audiobookshelf:
+        icon: "audiobookshelf.png"
+        href: "https://audiobookshelf.ratfish-company.ts.net"
+        description: "Audiobook and podcast library"
+        namespace: "media-server"
+        podSelector: "app=audiobookshelf"
+        siteMonitor: "http://audiobookshelf.media-server.svc.cluster.local:8080/healthcheck"
+    - Listenarr:
+        icon: "mdi-book-search"
+        href: "https://listenarr.ratfish-company.ts.net"
+        description: "Audiobook automation"
+        namespace: "media-server"
+        podSelector: "app=listenarr"
+        siteMonitor: "http://listenarr.media-server.svc.cluster.local:4545/api/v1/system/ready"
+    - Seerr:
+        icon: "jellyseerr.png"
+        href: "https://seerr.ratfish-company.ts.net"
+        description: "Request new media"
+        namespace: "media-server"
+        podSelector: "app.kubernetes.io/instance=seerr,app.kubernetes.io/name=seerr-chart"
+        siteMonitor: "http://seerr.media-server.svc.cluster.local"
+    - SuggestArr:
+        icon: "mdi-movie-search"
+        href: "https://suggestarr.ratfish-company.ts.net"
+        description: "Automated media recommendations"
+        namespace: "media-server"
+        podSelector: "app=suggestarr"
+        siteMonitor: "http://suggestarr.media-server.svc.cluster.local:5000/api/health/live"
+    - StreamyStats:
+        icon: "mdi-chart-line"
+        href: "https://streamystats.ratfish-company.ts.net"
+        description: "Jellyfin viewing statistics"
+        namespace: "media-server"
+        podSelector: "app=streamystats-nextjs"
+        siteMonitor: "http://streamystats.media-server.svc.cluster.local:3000"
+    - Wizarr:
+        icon: "mdi-account-multiple-plus"
+        href: "https://wizarr.ratfish-company.ts.net"
+        description: "Media user invitations"
+        namespace: "media-server"
+        podSelector: "app=wizarr"
+        siteMonitor: "http://wizarr.media-server.svc.cluster.local:5690/health"
+    - Pinchflat:
+        icon: "mdi-youtube"
+        href: "https://pinchflat.ratfish-company.ts.net"
+        description: "YouTube media archiving"
+        namespace: "media-server"
+        podSelector: "app=pinchflat"
+        siteMonitor: "http://pinchflat.media-server.svc.cluster.local"
 
-    - Downloads:
-        - Sonarr:
-            icon: sonarr.png
-            href: https://sonarr.ratfish-company.ts.net
-            description: Series automation
-            namespace: media-server
-            podSelector: app=sonarr
-            siteMonitor: http://sonarr.media-server.svc.cluster.local:8989/sonarr/ping
-        - Radarr:
-            icon: radarr.png
-            href: https://radarr.ratfish-company.ts.net
-            description: Movie automation
-            namespace: media-server
-            podSelector: app=radarr
-            siteMonitor: http://radarr.media-server.svc.cluster.local:7878/radarr/ping
-        - Prowlarr:
-            icon: prowlarr.png
-            href: https://prowlarr.ratfish-company.ts.net
-            description: Indexer management
-            namespace: media-server
-            podSelector: app=prowlarr
-            siteMonitor: http://prowlarr.media-server.svc.cluster.local:9696/prowlarr/ping
-        - SABnzbd:
-            icon: sabnzbd.png
-            href: https://sabnzbd.ratfish-company.ts.net
-            description: Usenet downloads
-            namespace: media-server
-            podSelector: app=sabnzbd
-            siteMonitor: http://sabnzbd.media-server.svc.cluster.local:8080/sabnzbd/wizard/
+- Downloads:
+    - Sonarr:
+        icon: "sonarr.png"
+        href: "https://sonarr.ratfish-company.ts.net/sonarr"
+        description: "Series automation"
+        namespace: "media-server"
+        podSelector: "app=sonarr"
+        siteMonitor: "http://sonarr.media-server.svc.cluster.local:8989/sonarr/ping"
+    - Radarr:
+        icon: "radarr.png"
+        href: "https://radarr.ratfish-company.ts.net/radarr"
+        description: "Movie automation"
+        namespace: "media-server"
+        podSelector: "app=radarr"
+        siteMonitor: "http://radarr.media-server.svc.cluster.local:7878/radarr/ping"
+    - Prowlarr:
+        icon: "prowlarr.png"
+        href: "https://prowlarr.ratfish-company.ts.net/prowlarr"
+        description: "Indexer management"
+        namespace: "media-server"
+        podSelector: "app=prowlarr"
+        siteMonitor: "http://prowlarr.media-server.svc.cluster.local:9696/prowlarr/ping"
+    - SABnzbd:
+        icon: "sabnzbd.png"
+        href: "https://sabnzbd.ratfish-company.ts.net/sabnzbd"
+        description: "Usenet downloads"
+        namespace: "media-server"
+        podSelector: "app=sabnzbd"
+        siteMonitor: "http://sabnzbd.media-server.svc.cluster.local:8080/sabnzbd/wizard/"
 
-    - Automation:
-        - n8n:
-            icon: n8n.png
-            href: https://n8n.ratfish-company.ts.net
-            description: Workflow automation
-            namespace: n8n
-            podSelector: app.kubernetes.io/instance=n8n,app.kubernetes.io/component=main
-            siteMonitor: http://n8n.n8n.svc.cluster.local:5678/healthz
-        - UpSnap:
-            icon: mdi-power
-            href: https://upsnap.ratfish-company.ts.net
-            description: Wake-on-LAN management
-            namespace: automation
-            podSelector: app=upsnap
-            siteMonitor: http://upsnap.automation.svc.cluster.local:8090
-        - Hermes Web UI:
-            icon: mdi-robot-happy
-            href: https://hermes-webui.ratfish-company.ts.net
-            description: Hermes agent web interface
-            namespace: hermes-agent
-            podSelector: app=hermes-agent
-            siteMonitor: http://hermes-agent.hermes-agent.svc.cluster.local:8787
-        - WAHA:
-            icon: mdi-whatsapp
-            href: https://waha.ratfish-company.ts.net
-            description: WhatsApp HTTP API
-            namespace: waha
-            podSelector: app=waha
-            siteMonitor: http://waha.waha.svc.cluster.local:3000/ping
+- Automation:
+    - n8n:
+        icon: "n8n.png"
+        href: "https://n8n.ratfish-company.ts.net"
+        description: "Workflow automation"
+        namespace: "n8n"
+        podSelector: "app.kubernetes.io/instance=n8n,app.kubernetes.io/component=main"
+        siteMonitor: "http://n8n.n8n.svc.cluster.local:5678/healthz"
+    - UpSnap:
+        icon: "mdi-power"
+        href: "https://upsnap.ratfish-company.ts.net"
+        description: "Wake-on-LAN management"
+        namespace: "automation"
+        podSelector: "app=upsnap"
+        siteMonitor: "http://upsnap.automation.svc.cluster.local:8090"
+    - Hermes Web UI:
+        icon: "mdi-robot-happy"
+        href: "https://hermes-webui.ratfish-company.ts.net"
+        description: "Hermes agent web interface"
+        namespace: "hermes-agent"
+        podSelector: "app=hermes-agent"
+        siteMonitor: "http://hermes-agent.hermes-agent.svc.cluster.local:8787"
 
-    - Messaging:
-        - WAHA:
-            icon: mdi-whatsapp
-            href: https://waha.ratfish-company.ts.net
-            description: WhatsApp sessions and API
-            namespace: waha
-            podSelector: app=waha
-            siteMonitor: http://waha.waha.svc.cluster.local:3000/ping
-        - Poll Bot:
-            icon: mdi-vote
-            href: https://waha.ratfish-company.ts.net
-            description: WhatsApp poll automation backend
-            namespace: waha
-            podSelector: app=poll-bot
-            siteMonitor: http://poll-bot.waha.svc.cluster.local
-        - Padel Booking:
-            icon: mdi-tennis
-            href: https://waha.ratfish-company.ts.net
-            description: Padel booking automation
-            namespace: waha
-            podSelector: app=padel-booking
-            siteMonitor: http://padel-booking.waha.svc.cluster.local:9080
+- Messaging:
+    - WAHA:
+        icon: "mdi-whatsapp"
+        href: "https://waha.ratfish-company.ts.net"
+        description: "WhatsApp sessions and API"
+        namespace: "waha"
+        podSelector: "app=waha"
+        siteMonitor: "http://waha.waha.svc.cluster.local:3000/ping"
+    - Poll Bot:
+        icon: "mdi-vote"
+        href: "https://waha.ratfish-company.ts.net"
+        description: "WhatsApp poll automation backend"
+        namespace: "waha"
+        podSelector: "app=poll-bot"
+        siteMonitor: "http://poll-bot.waha.svc.cluster.local/health"
 
-    - Observability:
-        - Grafana:
-            icon: grafana.png
-            href: https://grafana.ratfish-company.ts.net
-            description: Metrics dashboards
-            namespace: monitoring
-            podSelector: app.kubernetes.io/name=grafana
-            siteMonitor: http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local
-        - Alertmanager:
-            icon: alertmanager.png
-            href: https://alertmanager.ratfish-company.ts.net
-            description: Prometheus alert routing
-            namespace: monitoring
-            podSelector: app.kubernetes.io/name=alertmanager
-            siteMonitor: http://kube-prometheus-stack-alertmanager.monitoring.svc.cluster.local:9093/-/healthy
-        - Kubernetes:
-            icon: kubernetes.png
-            href: https://grafana.ratfish-company.ts.net
-            description: Cluster health via Grafana
-            namespace: kube-system
-            podSelector: k8s-app=kube-dns
+- Observability:
+    - Grafana:
+        icon: "grafana.png"
+        href: "https://grafana.ratfish-company.ts.net"
+        description: "Metrics dashboards"
+        namespace: "monitoring"
+        podSelector: "app.kubernetes.io/name=grafana"
+        siteMonitor: "http://kube-prometheus-stack-grafana.monitoring.svc.cluster.local"
+    - Alertmanager:
+        icon: "alertmanager.png"
+        href: "https://alertmanager.ratfish-company.ts.net"
+        description: "Prometheus alert routing"
+        namespace: "monitoring"
+        podSelector: "app.kubernetes.io/name=alertmanager"
+        siteMonitor: "http://kube-prometheus-stack-alertmanager.monitoring.svc.cluster.local:9093/-/healthy"
+    - CoreDNS:
+        icon: "kubernetes.png"
+        href: "https://grafana.ratfish-company.ts.net"
+        description: "Cluster DNS pods"
+        namespace: "kube-system"
+        podSelector: "k8s-app=kube-dns"
 
-    - Identity:
-        - Authentik:
-            icon: authentik.png
-            href: https://auth.ratfish-company.ts.net
-            description: Identity provider
-            namespace: authentik
-            podSelector: app.kubernetes.io/name=authentik,app.kubernetes.io/component=server
-            siteMonitor: http://authentik-server.authentik.svc.cluster.local
-
-    - Internal:
-        - Journiv:
-            icon: mdi-notebook-edit
-            href: https://journiv.ratfish-company.ts.net
-            description: Journaling app
-            namespace: journiv
-            podSelector: app=journiv-app
-            siteMonitor: http://journiv-app.journiv.svc.cluster.local
-        - Hermes Agent API:
-            icon: mdi-api
-            href: https://hermes-agent.ratfish-company.ts.net
-            description: Hermes agent dashboard/API
-            namespace: hermes-agent
-            podSelector: app=hermes-agent
-            siteMonitor: http://hermes-agent.hermes-agent.svc.cluster.local:9119
-
-    - Homepage Configuration:
-        - Official Docs:
-            icon: homepage.png
-            href: https://gethomepage.dev/
-            description: Homepage documentation
-        - Service Widgets:
-            icon: mdi-widgets
-            href: https://gethomepage.dev/widgets/services/
-            description: Supported widget integrations
+- Internal:
+    - Hermes Agent API:
+        icon: "mdi-api"
+        href: "https://hermes-agent.ratfish-company.ts.net"
+        description: "Hermes agent dashboard/API"
+        namespace: "hermes-agent"
+        podSelector: "app=hermes-agent"
+        siteMonitor: "http://hermes-agent.hermes-agent.svc.cluster.local:9119"

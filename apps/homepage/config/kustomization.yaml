@@ -1,10 +1,25 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: media-server
-resources:
-  - bookmarks.yaml
-  - custom-css.yaml
-  - kubernetes.yaml
-  - services.yaml
-  - settings.yaml
-  - widgets.yaml
+namespace: "media-server"
+configMapGenerator:
+  - name: "bookmarks"
+    files:
+      - bookmarks.yaml
+  - name: "custom-css"
+    files:
+      - custom.css
+  - name: "kubernetes"
+    files:
+      - kubernetes.yaml
+  - name: "services"
+    files:
+      - services.yaml
+  - name: "settings"
+    files:
+      - settings.yaml
+  - name: "widgets"
+    files:
+      - widgets.yaml
+generatorOptions:
+  labels:
+    app.kubernetes.io/name: "homepage"

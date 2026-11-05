@@ -44,34 +44,49 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "$(MY_POD_IP):3000,homepage.ratfish-company.ts.net"
+              # yamllint disable-line rule:line-length
+              value: "$(MY_POD_IP):3000,homepage.ratfish-company.ts.net,homepage.media-server.svc.cluster.local:3000"
             - name: LOG_LEVEL
-              value: "debug"
+              value: "info"
           ports:
             - name: http
               containerPort: 3000
               protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
           livenessProbe:
             httpGet:
               path: /api/healthcheck
               port: http
-            initialDelaySeconds: 5
             periodSeconds: 15
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           volumeMounts:
             - mountPath: /app/config
               name: config
-            # - mountPath: /app/config/custom.js
-            #   name: homepage-config
-            #   subPath: custom.js
             - mountPath: /app/config/custom.css
               name: custom-css-config
               subPath: custom.css
             - mountPath: /app/config/bookmarks.yaml
               name: bookmarks-config
               subPath: bookmarks.yaml
-            # - mountPath: /app/config/docker.yaml
-            #   name: homepage-config
-            #   subPath: docker.yaml
             - mountPath: /app/config/kubernetes.yaml
               name: kubernetes-config
               subPath: kubernetes.yaml
@@ -86,6 +101,7 @@ spec:
               subPath: widgets.yaml
             - name: mediaserver-volume
               mountPath: /media
+              readOnly: true
             - name: homepage-config
               mountPath: /assets
       volumes:

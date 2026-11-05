@@ -1,28 +1,23 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: bookmarks
-  namespace: media-server
-  labels:
-    app.kubernetes.io/name: homepage
-data:
-  bookmarks.yaml: |
-    - GitOps:
-        - Repository:
-          - icon: github.png
-            href: https://github.com/tomythical/homelab
-            description: Homelab manifests
-        - Flux Docs:
-          - icon: flux.png
-            href: https://fluxcd.io/flux/
-            description: GitOps operator docs
+- GitOps:
+    - Repository:
+        - icon: "github.png"
+          href: "https://github.com/tomythical/homelab"
+          description: "Homelab manifests"
+    - Flux Docs:
+        - icon: "flux.png"
+          href: "https://fluxcd.io/flux/"
+          description: "GitOps operator docs"
 
-    - Operations:
-        - Tailscale Admin:
-          - icon: tailscale.png
-            href: https://login.tailscale.com/admin/machines
-            description: Tailnet machines
-        - Homepage Docs:
-          - icon: homepage.png
-            href: https://gethomepage.dev/
-            description: Dashboard docs
+- Operations:
+    - Tailscale Admin:
+        - icon: "tailscale.png"
+          href: "https://login.tailscale.com/admin/machines"
+          description: "Tailnet machines"
+    - Homepage Docs:
+        - icon: "homepage.png"
+          href: "https://gethomepage.dev/"
+          description: "Dashboard docs"
+    - Service Widgets:
+        - icon: "mdi-widgets"
+          href: "https://gethomepage.dev/widgets/services/"
+          description: "Supported widget integrations"
