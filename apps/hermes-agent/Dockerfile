@@ -1,6 +1,6 @@
 # Adds the native runtime libraries required by Playwright Chromium.
 # The base image remains pinned to the same WebUI release used by deployment.yaml.
-FROM ghcr.io/nesquena/hermes-webui:0.52.650
+FROM ghcr.io/nesquena/hermes-webui:0.52.651
 
 LABEL org.opencontainers.image.source="https://github.com/Tomythical/homelab"
 
