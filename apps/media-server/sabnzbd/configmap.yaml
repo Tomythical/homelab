@@ -45,9 +45,9 @@ data:
     nzb_key = c7378d3a9b024117baacb21de005b1a6
     permissions = ""
     download_dir = /data/sabnzbd/incomplete
-    download_free = ""
+    download_free = 400G
     complete_dir = /data/sabnzbd/complete
-    complete_free = ""
+    complete_free = 400G
     fulldisk_autoresume = 0
     script_dir = ""
     nzb_backup_dir = ""
@@ -86,7 +86,7 @@ data:
     replace_spaces = 0
     replace_dots = 0
     safe_postproc = 1
-    pause_on_post_processing = 0
+    pause_on_post_processing = 1
     enable_all_par = 0
     sanitize_safe = 0
     cleanup_list = ,
