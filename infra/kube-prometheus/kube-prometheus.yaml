@@ -14,6 +14,13 @@ spec:
         name: prometheus-community
         namespace: flux-system
   values:
+    # Talos keeps these metrics listeners on the host loopback interface.
+    kubeControllerManager:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+    kubeProxy:
+      enabled: false
     alertmanager:
       alertmanagerSpec:
         secrets:
@@ -36,7 +43,10 @@ spec:
               - url_file: "/etc/alertmanager/secrets/handler-alertmanager-webhook/url"
                 send_resolved: true
     grafana:
-      adminPassword: admin
+      admin:
+        existingSecret: "grafana-admin"
+        userKey: "admin-user"
+        passwordKey: "admin-password"
       persistence:
         enabled: true
         type: sts

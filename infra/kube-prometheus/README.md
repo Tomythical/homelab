@@ -1,4 +1,4 @@
-# Monitoring Notifications
+# Monitoring
 
 Alertmanager sends firing and resolved alerts to Handler using its native
 Alertmanager webhook. Watchdog is excluded because it is a continuous heartbeat,
@@ -14,6 +14,38 @@ including its query parameters. Do not commit that URL or the credentials file.
 External Secrets creates `monitoring/handler-alertmanager-webhook`; Alertmanager
 mounts its `url` key as a file. Missing credentials will prevent the updated
 Alertmanager pod from starting, so populate Doppler before deployment.
+
+## Grafana Login
+
+Grafana's bootstrap credentials come from the `monitoring/grafana-admin` Secret.
+External Secrets sets `admin-user` to `tomythical` and reads `admin-password` from
+`GRAFANA_ADMIN_PASSWORD` in the Doppler project/config accessible to
+`doppler-auth-api`. Use a unique, randomly generated password stored in a password
+manager. Never commit it or paste it into shell commands.
+
+Before merging/deploying these manifests:
+
+1. Set `GRAFANA_ADMIN_PASSWORD` in Doppler. A missing value prevents the new Secret
+   from being created and can prevent Grafana from starting after deployment.
+2. Sign in to https://grafana.ratfish-company.ts.net with the existing account.
+   In the profile settings, change the username to `tomythical` and change the
+   password to the same value stored in Doppler.
+3. Verify the new login in a private browser window before closing the existing
+   session.
+4. Deploy through Git/Flux, then verify the ExternalSecret and Grafana pod:
+
+```bash
+kubectl -n monitoring get externalsecret grafana-admin
+kubectl -n monitoring wait --for=condition=Ready externalsecret/grafana-admin --timeout=120s
+kubectl -n monitoring get pods -l app.kubernetes.io/name=grafana
+```
+
+Grafana stores existing accounts in its persistent database. Changing this
+Secret or restarting Grafana does not update an existing username or password;
+the Secret only controls initial account creation on an empty database. Future
+password rotations must update both the Grafana account and Doppler. If the
+existing login is unavailable, use Grafana's admin password recovery procedure
+against the existing database. Do not delete its PVC to reset credentials.
 
 ## Disk Alerts
 
