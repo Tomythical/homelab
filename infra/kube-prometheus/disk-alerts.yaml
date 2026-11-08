@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: homelab-disk-alerts
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: homelab-disk
+      rules:
+        # Talos exports its persistent system filesystem as /var, not /opt.
+        - alert: HomelabSystemDiskSpaceLow
+          expr: |
+            (node_filesystem_avail_bytes{job="node-exporter",mountpoint="/var"} < 650e9)
+            and (node_filesystem_readonly{job="node-exporter",mountpoint="/var"} == 0)
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "System disk has less than 650 GB available"
+            description: "{{ $labels.instance }} has {{ $value | humanize1024 }}B available on /var. Downloads share this filesystem with Kubernetes; pause downloads and investigate usage."
+        - alert: HomelabSystemDiskSpaceLow
+          expr: |
+            (node_filesystem_avail_bytes{job="node-exporter",mountpoint="/var"} < 500e9)
+            and (node_filesystem_readonly{job="node-exporter",mountpoint="/var"} == 0)
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "System disk has less than 500 GB available"
+            description: "{{ $labels.instance }} has {{ $value | humanize1024 }}B available on /var. Pause downloads and reclaim space before the node reaches its roughly 300 GB eviction threshold."
+        - alert: KubeNodeDiskPressure
+          expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Kubernetes node reports disk pressure"
+            description: "Node {{ $labels.node }} is under disk pressure and workloads may be evicted. Check free bytes and inodes immediately."

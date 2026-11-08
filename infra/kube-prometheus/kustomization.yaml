@@ -4,3 +4,5 @@ namespace: monitoring
 resources:
   - kube-prometheus.yaml
   - ingress.yaml
+  - external-secret.yaml
+  - disk-alerts.yaml
