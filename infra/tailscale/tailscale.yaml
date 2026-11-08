@@ -15,6 +15,8 @@ spec:
   values:
     installCRDs: false
     operatorConfig:
+      podAnnotations:
+        redeploy-at: "2026-11-08T00:56:37Z"
       defaultTags:
         - "tag:k8s-operator"
       image:
@@ -24,5 +26,3 @@ spec:
     apiServerProxyConfig:
       allowImpersonation: "true"
       mode: "true"
-    podAnnotations:
-      redeploy-at: "2026-08-25T16:55:02Z"
