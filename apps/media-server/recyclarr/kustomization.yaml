@@ -5,3 +5,4 @@ resources:
   - configmap.yaml
   - cronjob.yaml
   - external-secret.yaml
+  - prometheusrule.yaml

@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: recyclarr-sync
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: recyclarr
+      rules:
+        - alert: RecyclarrSyncOverdue
+          expr: |
+            time() - (
+              kube_cronjob_status_last_successful_time{job="kube-state-metrics",namespace="media-server",cronjob="recyclarr-sync"}
+              or kube_cronjob_created{job="kube-state-metrics",namespace="media-server",cronjob="recyclarr-sync"}
+            ) > 36 * 60 * 60
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Recyclarr has not completed a successful sync in 36 hours"
+            description: "Check CronJob {{ $labels.namespace }}/{{ $labels.cronjob }} and its recent job logs. Failed job records expire after three days, but this alert remains active until a successful run."
