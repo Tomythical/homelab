@@ -55,6 +55,13 @@ Edits are stored in Grafana's persistent database, not in Git or the source
 ConfigMaps. A changed provisioning source (for example, a chart upgrade) can
 overwrite those edits. Export important customized dashboards before upgrading.
 
+The Compute Resources / Cluster dashboard is excluded from sidecar discovery by
+removing its source ConfigMap's `grafana_dashboard` label in a Helm post-renderer.
+The provider's `disableDelete` setting preserves database dashboards when their
+source files disappear. This dashboard is edited directly in Grafana; its JSON
+is not managed in Git and chart upgrades do not refresh it. Back it up using
+Grafana's dashboard export. Other dashboards remain provisioned as before.
+
 ## Disk Alerts
 
 The Talos persistent system filesystem is exported by node-exporter as `/var`.

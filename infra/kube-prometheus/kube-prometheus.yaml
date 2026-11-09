@@ -13,6 +13,16 @@ spec:
         kind: HelmRepository
         name: prometheus-community
         namespace: flux-system
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              version: v1
+              kind: ConfigMap
+              name: kube-prometheus-stack-k8s-resources-cluster
+            patch: |
+              - op: remove
+                path: /metadata/labels/grafana_dashboard
   values:
     # Talos keeps these metrics listeners on the host loopback interface.
     kubeControllerManager:
