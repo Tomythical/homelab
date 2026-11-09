@@ -55,12 +55,16 @@ Edits are stored in Grafana's persistent database, not in Git or the source
 ConfigMaps. A changed provisioning source (for example, a chart upgrade) can
 overwrite those edits. Export important customized dashboards before upgrading.
 
-The Compute Resources / Cluster dashboard is excluded from sidecar discovery by
-removing its source ConfigMap's `grafana_dashboard` label in a Helm post-renderer.
+Dashboards customized for single-cluster/Grafium compatibility are excluded from
+sidecar discovery by removing their source ConfigMaps' `grafana_dashboard` labels
+in a Helm post-renderer. These include Kubernetes, CoreDNS, etcd, Node Exporter,
+and Prometheus dashboards; Alertmanager and Grafana Overview remain provisioned.
 The provider's `disableDelete` setting preserves database dashboards when their
-source files disappear. This dashboard is edited directly in Grafana; its JSON
-is not managed in Git and chart upgrades do not refresh it. Back it up using
-Grafana's dashboard export. Other dashboards remain provisioned as before.
+source files disappear. Customized dashboards are edited directly in Grafana;
+their JSON is not managed in Git and chart upgrades do not refresh them. Back
+them up using Grafana's dashboard export. The single-cluster customization removes
+cluster label filters and the cluster variable, preserving metric names and
+other selectors. It is not suitable for a shared multi-cluster data source.
 
 ## Disk Alerts
 

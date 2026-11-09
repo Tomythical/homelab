@@ -19,7 +19,8 @@ spec:
           - target:
               version: v1
               kind: ConfigMap
-              name: kube-prometheus-stack-k8s-resources-cluster
+              name: kube-prometheus-stack-(apiserver|cluster-total|etcd|k8s-coredns|k8s-resources-.*|kubelet|namespace-by-.*|node-.*|nodes.*|persistentvolumesusage|pod-total|prometheus|workload-total)
+              labelSelector: grafana_dashboard
             patch: |
               - op: remove
                 path: /metadata/labels/grafana_dashboard
