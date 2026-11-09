@@ -47,6 +47,7 @@ spec:
         dashboards:
           provider:
             allowUiUpdates: true
+            disableDelete: true
       admin:
         existingSecret: "grafana-admin"
         userKey: "admin-user"
