@@ -43,6 +43,10 @@ spec:
               - url_file: "/etc/alertmanager/secrets/handler-alertmanager-webhook/url"
                 send_resolved: true
     grafana:
+      sidecar:
+        dashboards:
+          provider:
+            allowUiUpdates: true
       admin:
         existingSecret: "grafana-admin"
         userKey: "admin-user"

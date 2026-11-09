@@ -47,6 +47,14 @@ password rotations must update both the Grafana account and Doppler. If the
 existing login is unavailable, use Grafana's admin password recovery procedure
 against the existing database. Do not delete its PVC to reset credentials.
 
+## Direct Dashboard Editing
+
+The Grafana sidecar dashboard provider enables `allowUiUpdates`, so existing
+provisioned dashboards can be edited and saved through the UI or HTTP API.
+Edits are stored in Grafana's persistent database, not in Git or the source
+ConfigMaps. A changed provisioning source (for example, a chart upgrade) can
+overwrite those edits. Export important customized dashboards before upgrading.
+
 ## Disk Alerts
 
 The Talos persistent system filesystem is exported by node-exporter as `/var`.
