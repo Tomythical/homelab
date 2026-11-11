@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: nextjs
-          image: ghcr.io/fredrikburmester/streamystats-nextjs:v2.20.0
+          image: ghcr.io/fredrikburmester/streamystats-nextjs:v2.22.2
           env:
             - name: NODE_ENV
               value: production
