@@ -13,7 +13,7 @@ spec:
         namespace: flux-system
   values:
     image:
-      tag: "2.12.3"
+      tag: "2.49.5"
 
     main:
       count: 1
@@ -23,6 +23,8 @@ spec:
         size: 8Gi
       extraEnvVars:
         N8N_SECURE_COOKIE: false
+        N8N_MCP_MANAGED_BY_ENV: "true"
+        N8N_MCP_ACCESS_ENABLED: "true"
 
     worker:
       persistence:
