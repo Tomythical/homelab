@@ -44,7 +44,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: status.podIP
-        image: pomerium/pomerium:v0.34.1
+        image: pomerium/pomerium:v0.34.2
         imagePullPolicy: Always
         name: pomerium
         ports:
