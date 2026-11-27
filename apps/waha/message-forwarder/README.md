@@ -31,6 +31,8 @@ WAHA sends signed `message` events to the in-cluster `waha-forwarder` service. T
 
    An empty label uses the sender's WhatsApp display name or ID for a DM, and the group ID for a group. Add group labels for readable group names on the Watch. `webhookToken` can be omitted for a different destination that doesn't need this header. Use HTTPS for destinations outside the cluster.
 
+   To forward all new DMs and standalone groups, set `"forwardAllPrivateChats": true` and `"forwardAllStandaloneGroups": true`. Both default to `false`, so existing configurations keep their allowlist behavior. In standalone-group mode, `groupChats` provides optional display labels; it cannot override Community exclusions. WAHA supplies group names and Community membership. The forwarder refreshes that information on demand after 30 seconds, skips unclassified groups and groups with a known disappearing-message timer, and asks WAHA to retry group events if the lookup fails.
+
 4. Deploy the manifests via Flux. Wait for `externalsecret/waha-forwarder-secrets` in `waha` to be Ready. The WAHA hook stays disabled until its secret exists and WAHA starts with it; if the pods started before the secret synced, restart `deployment/waha-forwarder` and then `deployment/waha` after the sync. Restart the forwarder after Doppler config changes; restart WAHA too when changing the signing key. If changing destinations, let the old queue drain first so multipart forwards aren't split between destinations.
 
    If the n8n ingress is unavailable, use `kubectl -n n8n port-forward svc/n8n 5678:5678` and open `http://localhost:5678` to import the workflow.

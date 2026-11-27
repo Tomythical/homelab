@@ -50,6 +50,12 @@ spec:
                   name: "waha-forwarder-secrets"
                   key: "config.json"
                   optional: true
+            - name: "WAHA_API_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: "waha-secrets"
+                  key: "WAHA_API_KEY"
+                  optional: true
           livenessProbe:
             httpGet:
               path: "/health"

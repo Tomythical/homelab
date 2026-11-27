@@ -14,13 +14,15 @@ import threading
 import time
 from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import SplitResult, urlsplit
+from urllib.parse import SplitResult, quote, urlsplit
 
 QUEUE_LIFETIME = 24 * 60 * 60
 DEDUPE_LIFETIME = 7 * QUEUE_LIFETIME
 MAX_WEBHOOK_AGE = 15 * 60
 MAX_MESSAGE_AGE = 5 * 60
 MAX_REQUEST_BYTES = 1024 * 1024
+GROUP_REFRESH_SECONDS = 30
+GROUP_RETRY_SECONDS = 10
 PART_HEADER = "X-WhatsApp-Forwarder-Part"
 NEXT_PART_HEADER = "X-WhatsApp-Forwarder-Next-Part"
 TOKEN_HEADER = "X-WhatsApp-Forwarder-Token"
@@ -74,6 +76,8 @@ class Config:
     group_chats: dict[str, str]
     destination: SplitResult
     token: str
+    forward_all_private: bool = False
+    forward_standalone_groups: bool = False
 
     @classmethod
     def from_env(cls):
@@ -125,6 +129,12 @@ class Config:
                 raise ValueError(f"{name} must map WhatsApp chat IDs to display names")
             return {jid: label(display_name) for jid, display_name in values.items()}
 
+        def flag(name):
+            value = config.get(name, False)
+            if type(value) is not bool:
+                raise ValueError(f"{name} must be a JSON boolean")
+            return value
+
         return cls(
             secret.encode(),
             session,
@@ -132,7 +142,67 @@ class Config:
             chats("groupChats", GROUP_JID),
             destination,
             token,
+            flag("forwardAllPrivateChats"),
+            flag("forwardAllStandaloneGroups"),
         )
+
+
+class GroupLookupUnavailable(Exception):
+    pass
+
+
+class StandaloneGroups:
+    def __init__(self, session, api_key):
+        self.path = f"/api/{quote(session, safe='')}/groups?exclude=participants"
+        self.api_key = api_key
+        self.names = {}
+        self.refresh_at = 0
+        self.retry_at = 0
+        self.lock = threading.Lock()
+
+    def name(self, chat):
+        with self.lock:
+            now = time.monotonic()
+            if now >= self.refresh_at:
+                if now < self.retry_at:
+                    raise GroupLookupUnavailable
+                try:
+                    self.names = self.fetch()
+                except (OSError, ValueError, http.client.HTTPException):
+                    self.retry_at = time.monotonic() + GROUP_RETRY_SECONDS
+                    logging.warning("WAHA group metadata unavailable; will retry group messages")
+                    raise GroupLookupUnavailable from None
+                self.refresh_at = time.monotonic() + GROUP_REFRESH_SECONDS
+            return self.names.get(chat)
+
+    def fetch(self):
+        with contextlib.closing(
+            http.client.HTTPConnection("waha.waha.svc.cluster.local", 3000, timeout=5)
+        ) as connection:
+            connection.request("GET", self.path, headers={"X-Api-Key": self.api_key})
+            with connection.getresponse() as response:
+                if response.status != 200:
+                    raise ValueError("WAHA groups API request failed")
+                body = response.read(MAX_REQUEST_BYTES + 1)
+        if len(body) > MAX_REQUEST_BYTES:
+            raise ValueError("WAHA groups API response too large")
+        groups = json.loads(body)
+        if not isinstance(groups, dict):
+            raise ValueError("Unexpected WAHA NOWEB groups API response")
+
+        names = {}
+        for chat, metadata in groups.items():
+            group = fields(metadata)
+            if (
+                GROUP_JID.fullmatch(chat)
+                and group.get("id") == chat
+                and group.get("isCommunity") is False
+                and group.get("isCommunityAnnounce") is False
+                and group.get("linkedParent") in (None, "")
+                and group.get("ephemeralDuration") in (None, 0, "0")
+            ):
+                names[chat] = label(group.get("subject")) or chat
+        return names
 
 
 def content_for_forwarding(payload):
@@ -170,7 +240,7 @@ def content_for_forwarding(payload):
     return body, attachment
 
 
-def forwardable_message(event, config, now):
+def forwardable_message(event, config, now, standalone_groups=None):
     if (
         event.get("event") != "message"
         or event.get("session") != config.session
@@ -196,31 +266,37 @@ def forwardable_message(event, config, now):
     message_id = payload.get("id")
     if not isinstance(chat, str) or not isinstance(message_id, str) or not message_id:
         return None
+    content = content_for_forwarding(payload)
+    if content is None:
+        return None
     raw = fields(payload.get("_data"))
     key = fields(raw.get("key"))
     push_name = label(raw.get("pushName"))
     if GROUP_JID.fullmatch(chat):
-        if chat not in config.group_chats:
+        if config.forward_standalone_groups:
+            group = standalone_groups.name(chat) if standalone_groups else None
+            if group is None:
+                return None
+        elif chat in config.group_chats:
+            group = chat
+        else:
             return None
+        group = config.group_chats.get(chat) or group
         participant = private_jid(payload.get("participant"))
         alternate = private_jid(key.get("participantAlt"))
         sender = config.private_chats.get(participant) or config.private_chats.get(alternate)
         sender = sender or push_name or participant or "Unknown sender"
-        group = config.group_chats[chat] or chat
     else:
         chat = private_jid(chat)
         if not chat:
             return None
         alternate = private_jid(key.get("remoteJidAlt"))
         allowed_id = chat if chat in config.private_chats else alternate
-        if allowed_id not in config.private_chats:
+        if not config.forward_all_private and allowed_id not in config.private_chats:
             return None
-        sender = config.private_chats[allowed_id] or push_name or allowed_id
+        sender = config.private_chats.get(allowed_id) or push_name or allowed_id or chat
         group = None
 
-    content = content_for_forwarding(payload)
-    if content is None:
-        return None
     body, attachment = content
     delivery_id = hashlib.sha256(json.dumps([config.session, message_id]).encode()).hexdigest()
     return {
@@ -405,7 +481,10 @@ class WebhookHandler(BaseHTTPRequestHandler):
         try:
             event = fields(json.loads(body))
             now = int(time.time())
-            message = forwardable_message(event, config, now)
+            message = forwardable_message(event, config, now, self.server.standalone_groups)
+        except GroupLookupUnavailable:
+            self.reply(503)
+            return
         except (ValueError, OverflowError, RecursionError):
             self.reply(400)
             return
@@ -427,11 +506,18 @@ def main():
         config = Config.from_env()
     except ValueError as error:
         sys.exit(str(error))
+    standalone_groups = None
+    if config and config.forward_standalone_groups:
+        api_key = os.getenv("WAHA_API_KEY")
+        if not api_key:
+            sys.exit("WAHA_API_KEY is required when forwarding standalone groups")
+        standalone_groups = StandaloneGroups(config.session, api_key)
     with open("/data/worker.lock", "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         queue = DeliveryQueue("/data/queue.sqlite3")
         with ThreadingHTTPServer(("", 8080), WebhookHandler) as server:
             server.forwarder_config = config
+            server.standalone_groups = standalone_groups
             server.delivery_queue = queue
             server.delivery_worker = threading.Thread(target=deliver, args=(queue, config), daemon=True)
             server.delivery_worker.start()
