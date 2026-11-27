@@ -8,14 +8,18 @@ import tempfile
 import threading
 import time
 import unittest
+from dataclasses import replace
 from http.server import ThreadingHTTPServer
 from pathlib import Path
+from unittest.mock import patch
 from urllib.parse import urlsplit
 
 from app import (
     QUEUE_LIFETIME,
     Config,
     DeliveryQueue,
+    GroupLookupUnavailable,
+    StandaloneGroups,
     WebhookHandler,
     forwardable_message,
 )
@@ -66,6 +70,64 @@ class ForwarderTest(unittest.TestCase):
         payload["_data"]["pushName"] = "Sam"
         self.assertEqual(forwardable_message(self.event, self.config, self.now)["sender"], "Sam")
 
+    def test_all_private_chats_preserve_exclusions_and_optional_labels(self):
+        config = replace(self.config, forward_all_private=True)
+        payload = self.event["payload"]
+        self.assertEqual(forwardable_message(self.event, config, self.now)["sender"], "Maya")
+        payload["_data"]["key"].clear()
+        self.assertEqual(forwardable_message(self.event, config, self.now)["sender"], payload["from"])
+        for chat in ("status@broadcast", "12345@newsletter", "99999@g.us"):
+            with self.subTest(chat=chat):
+                payload["from"] = chat
+                self.assertIsNone(forwardable_message(self.event, config, self.now))
+
+    def test_standalone_groups_require_waha_classification_even_if_allowlisted(self):
+        config = replace(self.config, forward_standalone_groups=True)
+        standalone = {"isCommunity": False, "isCommunityAnnounce": False}
+        group_flags = {
+            "10000@g.us": standalone,
+            "12345@g.us": {**standalone, "linkedParent": "50000@g.us"},
+            "50000@g.us": {"isCommunity": True, "isCommunityAnnounce": False},
+            "50001@g.us": {"isCommunity": False, "isCommunityAnnounce": True},
+            "50002@g.us": {"isCommunity": False},
+            "50003@g.us": {**standalone, "ephemeralDuration": 86400},
+        }
+        response = {
+            chat: {**flags, "id": chat, "subject": "Group name"}
+            for chat, flags in group_flags.items()
+        }
+        directory = StandaloneGroups(config.session, "test-api-key")
+        with patch("app.http.client.HTTPConnection") as connection:
+            mock_response = connection.return_value.getresponse.return_value.__enter__.return_value
+            mock_response.status = 200
+            mock_response.read.return_value = json.dumps(response).encode()
+            self.event["payload"]["from"] = "10000@g.us"
+            result = forwardable_message(self.event, config, self.now, directory)
+            self.assertEqual(result["group"], "Group name")
+            for chat in (*group_flags.keys() - {"10000@g.us"}, "99999@g.us"):
+                with self.subTest(chat=chat):
+                    self.event["payload"]["from"] = chat
+                    self.assertIsNone(forwardable_message(self.event, config, self.now, directory))
+            connection.return_value.request.assert_called_once_with(
+                "GET", "/api/default/groups?exclude=participants", headers={"X-Api-Key": "test-api-key"},
+            )
+
+    def test_expired_group_metadata_is_not_used_after_lookup_failure(self):
+        directory = StandaloneGroups("default", "test-api-key")
+        chat = "10000@g.us"
+        with patch("app.time.monotonic", return_value=100) as clock, patch.object(
+            directory, "fetch", side_effect=[{chat: "Standalone"}, TimeoutError, {}]
+        ) as fetch:
+            self.assertEqual(directory.name(chat), "Standalone")
+            clock.return_value = 130
+            with self.assertLogs(level="WARNING"), self.assertRaises(GroupLookupUnavailable):
+                directory.name(chat)
+            with self.assertRaises(GroupLookupUnavailable):
+                directory.name(chat)
+            self.assertEqual(fetch.call_count, 2)
+            clock.return_value = 140
+            self.assertIsNone(directory.name(chat))
+
     def test_temporary_content_filtered_without_inspecting_quote(self):
         payload = self.event["payload"]
         payload["body"] = "Caption"
@@ -93,6 +155,7 @@ class ForwarderTest(unittest.TestCase):
             queue = DeliveryQueue(path)
             with ThreadingHTTPServer(("127.0.0.1", 0), WebhookHandler) as server:
                 server.forwarder_config = self.config
+                server.standalone_groups = None
                 server.delivery_queue = queue
                 thread = threading.Thread(target=server.serve_forever)
                 thread.start()
