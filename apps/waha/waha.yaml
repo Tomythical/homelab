@@ -50,6 +50,26 @@ spec:
               value: "admin"
             - name: WAHA_WEBHOOK_URL
               value: "http://poll-bot.waha.svc.cluster.local/webhook"
+            - name: WHATSAPP_HOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: "waha-forwarder-secrets"
+                  key: "hook-url"
+                  optional: true
+            - name: WHATSAPP_HOOK_EVENTS
+              value: "message"
+            - name: WHATSAPP_HOOK_HMAC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: "waha-forwarder-secrets"
+                  key: "hmac-key"
+                  optional: true
+            - name: WHATSAPP_HOOK_RETRIES_POLICY
+              value: "constant"
+            - name: WHATSAPP_HOOK_RETRIES_DELAY_SECONDS
+              value: "15"
+            - name: WHATSAPP_HOOK_RETRIES_ATTEMPTS
+              value: "40"
             - name: WAHA_API_KEY
               valueFrom:
                 secretKeyRef:

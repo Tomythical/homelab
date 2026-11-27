@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "waha-forwarder"
+  labels:
+    app.kubernetes.io/name: "waha-forwarder"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    type: "Recreate"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "waha-forwarder"
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: "waha-forwarder"
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: "forwarder"
+          image: "python:3.14-slim"
+          command: ["python", "-Bu", "/app/app.py"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: "RuntimeDefault"
+          ports:
+            - name: "http"
+              containerPort: 8080
+          env:
+            - name: "WAHA_FORWARDER_HMAC_KEY"
+              valueFrom:
+                secretKeyRef:
+                  name: "waha-forwarder-secrets"
+                  key: "hmac-key"
+                  optional: true
+            - name: "WAHA_FORWARDER_CONFIG"
+              valueFrom:
+                secretKeyRef:
+                  name: "waha-forwarder-secrets"
+                  key: "config.json"
+                  optional: true
+          livenessProbe:
+            httpGet:
+              path: "/health"
+              port: "http"
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: "/health"
+              port: "http"
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "20m"
+              memory: "32Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          volumeMounts:
+            - name: "code"
+              mountPath: "/app"
+              readOnly: true
+            - name: "data"
+              mountPath: "/data"
+      volumes:
+        - name: "code"
+          configMap:
+            name: "waha-forwarder-code"
+        - name: "data"
+          persistentVolumeClaim:
+            claimName: "waha-forwarder-data"

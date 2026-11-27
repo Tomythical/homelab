@@ -8,4 +8,5 @@ resources:
   - ingress.yaml
   - external-secret.yaml
   - poll-bot/
+  - message-forwarder/
   # - padel-booking/
