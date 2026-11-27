@@ -1,0 +1,92 @@
+{
+  "name": "WAHA → Telegram Watch inbox",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "waha-watch-forwarder",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "28a988ca-d14d-4348-a526-cd01276f3124",
+      "name": "Forwarded WhatsApp message",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [0, 0],
+      "webhookId": "edb3c78c-3f87-4dbf-9f2d-64dc053ed8f0"
+    },
+    {
+      "parameters": {
+        "jsCode": "const { body, headers } = $input.first().json;\nconst part = Number(headers['x-whatsapp-forwarder-part'] ?? 1);\nif (!body || !Number.isSafeInteger(part) || part < 1 || typeof body.text !== 'string' || typeof body.sender !== 'string') {\n  throw new Error('Invalid forwarder payload');\n}\n\nconst sender = Array.from(body.sender).slice(0, 128).join('');\nconst group = typeof body.group === 'string' ? Array.from(body.group).slice(0, 128).join('') : '';\nconst title = group ? `${group} · ${sender}` : sender;\nconst attachment = body.attachment ? `[${body.attachment}]` : '';\nconst bodyText = attachment ? (body.text ? `${attachment} ${body.text}` : attachment) : body.text;\nif (!bodyText.trim()) throw new Error('Message has no content');\n\nconst limit = 4096;\nlet parts = [bodyText];\nif (`${title}: ${bodyText}`.length > limit) {\n  // Count UTF-16 code units conservatively, without breaking surrogate pairs.\n  // Reserve space for the sender and multipart numbering on every part.\n  const contentLimit = limit - title.length - 32;\n  parts = [];\n  let chunk = '';\n  for (const character of bodyText) {\n    if (chunk.length + character.length > contentLimit) {\n      parts.push(chunk);\n      chunk = '';\n    }\n    chunk += character;\n  }\n  if (chunk) parts.push(chunk);\n}\nif (part > parts.length) throw new Error('Invalid multipart cursor');\n\nconst numberedTitle = parts.length > 1 ? `${title} (${part}/${parts.length})` : title;\nconst text = `${numberedTitle}: ${parts[part - 1]}`\n  .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');\nreturn [{ json: {\n  text,\n  silent: part > 1,\n  nextPart: part < parts.length ? part + 1 : 0,\n} }];"
+      },
+      "id": "8316a734-14ac-485e-80b3-079d8e24114c",
+      "name": "Format Telegram part",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 0]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_notification": "={{ $json.silent }}",
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "24e92690-42ec-4e94-b327-77b9f4fc9d1b",
+      "name": "Send to private Telegram chat",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [480, 0]
+    },
+    {
+      "parameters": {
+        "respondWith": "noData",
+        "options": {
+          "responseCode": 204,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "X-WhatsApp-Forwarder-Next-Part",
+                "value": "={{ String($('Format Telegram part').first().json.nextPart) }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "dc95afc3-297e-4573-87f7-8d69dcd9eebc",
+      "name": "Acknowledge delivered part",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [720, 0]
+    }
+  ],
+  "connections": {
+    "Forwarded WhatsApp message": {
+      "main": [[{"node": "Format Telegram part", "type": "main", "index": 0}]]
+    },
+    "Format Telegram part": {
+      "main": [[{"node": "Send to private Telegram chat", "type": "main", "index": 0}]]
+    },
+    "Send to private Telegram chat": {
+      "main": [[{"node": "Acknowledge delivered part", "type": "main", "index": 0}]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "executionTimeout": 12,
+    "saveDataErrorExecution": "none",
+    "saveDataSuccessExecution": "none",
+    "saveExecutionProgress": false,
+    "saveManualExecutions": false
+  },
+  "pinData": {},
+  "tags": []
+}
