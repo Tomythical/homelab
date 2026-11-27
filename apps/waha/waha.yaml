@@ -23,7 +23,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: waha
-          image: devlikeapro/waha:noweb-2026.4.3
+          image: "devlikeapro/waha:noweb-2026.10.1"
           imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
@@ -42,6 +42,8 @@ spec:
           env:
             - name: WHATSAPP_DEFAULT_ENGINE
               value: "NOWEB"
+            - name: WAHA_NOWEB_WA_VERSION
+              value: "auto-web"
             - name: TZ
               value: "Europe/London"
             - name: WAHA_PRINT_QR
