@@ -24,7 +24,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: "forwarder"
-          image: "python:3.14-slim"
+          image: "python:3.15-slim"
           command: ["python", "-Bu", "/app/app.py"]
           securityContext:
             allowPrivilegeEscalation: false
